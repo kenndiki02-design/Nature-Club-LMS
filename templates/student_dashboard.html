@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Dashboard</h6>
+            <h1 class="mb-5">Welcome, {{ user.fullname }}</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="bg-light p-5 rounded">
+                    <h3 class="mb-4">Student Dashboard</h3>
+                    <p class="mb-4">You are now logged in. Here you can access your courses and learning materials.</p>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="feature-item bg-white p-4 rounded shadow-sm text-center">
+                                <i class="fa fa-book-open fa-3x text-primary mb-3"></i>
+                                <h5 class="mb-3">My Courses</h5>
+                                {% if enrolled_courses %}
+                                <ul class="list-group text-start">
+                                    {% for course in enrolled_courses %}
+                                    <li class="list-group-item">{{ course.title }}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p>You are not enrolled in any courses yet.</p>
+                                <a href="{% url 'courses' %}" class="btn btn-primary py-2 px-4">View Courses</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-item bg-white p-4 rounded shadow-sm text-center">
+                                <i class="fa fa-user-edit fa-3x text-primary mb-3"></i>
+                                <h5 class="mb-3">Edit Profile</h5>
+                                <p>Update your personal information and account settings.</p>
+                                <a href="#" class="btn btn-primary py-2 px-4">Edit Profile</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 text-center">
+                        <a href="{% url 'logout' %}" class="btn btn-danger py-2 px-4">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
