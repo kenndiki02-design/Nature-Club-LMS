@@ -31,5 +31,6 @@ urlpatterns = [
     path('student-dashboard/', views.student_dashboard, name='student_dashboard'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('enroll/<int:course_id>/', views.enroll, name='enroll'),
+    path('profile/', views.profile, name='profile'),
     path('logout/', views.logout, name='logout'),
 ]

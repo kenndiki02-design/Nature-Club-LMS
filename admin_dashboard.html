@@ -1,0 +1,59 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+            <h6 class="section-title bg-white text-center text-primary px-3">Dashboard</h6>
+            <h1 class="mb-5">Admin Dashboard</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-10 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="bg-light p-5 rounded">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0">Enrolled Students</h3>
+                        <a href="{% url 'logout' %}" class="btn btn-danger py-2 px-4">Logout</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover bg-white">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Full Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col">Enrolled Courses</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                <tr>
+                                    <th scope="row">{{ forloop.counter }}</th>
+                                    <td>{{ student.fullname }}</td>
+                                    <td>{{ student.email }}</td>
+                                    <td>
+                                        {% if student.is_admin %}
+                                        <span class="badge bg-danger">Admin</span>
+                                        {% else %}
+                                        <span class="badge bg-success">Student</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for course in student.enrolled_courses.all %}
+                                        <span class="badge bg-info text-dark">{{ course.title }}</span><br>
+                                        {% empty %}
+                                        <span class="text-muted">None</span>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

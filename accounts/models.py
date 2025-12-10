@@ -10,6 +10,7 @@ class Course(models.Model):
     instructor = models.CharField(max_length=100)
     rating = models.FloatField(default=0.0)
     reviews = models.IntegerField(default=0)
+    video_url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -20,6 +21,8 @@ class Student(models.Model):
     password = models.CharField(max_length=255)
     is_admin = models.BooleanField(default=False)
     enrolled_courses = models.ManyToManyField(Course, blank=True)
+    bio = models.TextField(blank=True)
+    phone = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
         return self.fullname
