@@ -1,56 +1,197 @@
 {% extends 'index.html' %}
 {% load static %}
+{% block title %}My Dashboard – Karatina University Nature Club LMS{% endblock %}
 
 {% block content %}
-<div class="container-xxl py-5">
+<section class="page-hero" style="padding:80px 0 40px;">
+    <h1>Student Dashboard</h1>
+    <div class="breadcrumb"><a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span><span>Dashboard</span></div>
+</section>
+
+<section style="padding:40px 0 80px;background:var(--cream);">
     <div class="container">
-        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title bg-white text-center text-primary px-3">Dashboard</h6>
-            <h1 class="mb-5">Welcome, {{ user.fullname }}</h1>
+
+        <!-- Welcome Banner -->
+        <div style="background:var(--gradient-hero);border-radius:var(--radius);padding:28px 32px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+            <div style="display:flex;align-items:center;gap:18px;">
+                {% if student.profile_picture %}
+                <img src="{{ student.profile_picture.url }}" alt="Profile" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid var(--mint);">
+                {% else %}
+                <div style="width:64px;height:64px;border-radius:50%;background:rgba(82,183,136,0.3);display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:800;color:var(--mint);border:3px solid var(--mint);">
+                    {{ student.fullname|first|upper }}
+                </div>
+                {% endif %}
+                <div>
+                    <div style="font-size:0.8rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;">Welcome back</div>
+                    <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:white;">{{ student.fullname }}</div>
+                    <div style="font-size:0.82rem;color:var(--lime);">🌿 Nature Club Member</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                <a href="{% url 'courses' %}" class="btn btn-white btn-sm">Browse Courses <i class="fas fa-search"></i></a>
+                <a href="{% url 'profile' %}" class="btn btn-sm" style="background:rgba(255,255,255,0.12);color:white;border:1px solid rgba(255,255,255,0.3);">Edit Profile <i class="fas fa-cog"></i></a>
+            </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="bg-light p-5 rounded">
-                    <h3 class="mb-4">Student Dashboard</h3>
-                    <p class="mb-4">You are now logged in. Here you can access your courses and learning materials.</p>
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="feature-item bg-white p-4 rounded shadow-sm text-center">
-                                <i class="fa fa-book-open fa-3x text-primary mb-3"></i>
-                                <h5 class="mb-3">My Courses</h5>
-                                {% if enrolled_courses %}
-                                <ul class="list-group text-start">
-                                    {% for course in enrolled_courses %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        {{ course.title }}
-                                        {% if course.video_url %}
-                                        <a href="{{ course.video_url }}" target="_blank"
-                                            class="btn btn-sm btn-outline-primary">Watch Video</a>
-                                        {% endif %}
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                                {% else %}
-                                <p>You are not enrolled in any courses yet.</p>
-                                <a href="{% url 'courses' %}" class="btn btn-primary py-2 px-4">View Courses</a>
+
+        <!-- Stats Row -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px;">
+            <div class="card" style="padding:20px;text-align:center;">
+                <div style="font-size:2rem;font-weight:800;color:var(--forest);font-family:'Playfair Display',serif;">{{ course_details|length }}</div>
+                <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-book" style="color:var(--sage);"></i> Enrolled Courses</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;">
+                <div style="font-size:2rem;font-weight:800;color:var(--forest);font-family:'Playfair Display',serif;">{{ total_completed }}</div>
+                <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-check-circle" style="color:var(--sage);"></i> Completed Courses</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;">
+                <div style="font-size:2rem;font-weight:800;color:var(--forest);font-family:'Playfair Display',serif;">{{ certificates|length }}</div>
+                <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-certificate" style="color:var(--sage);"></i> Certificates Earned</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;">
+                <div style="font-size:2rem;font-weight:800;color:var(--forest);font-family:'Playfair Display',serif;">{{ upcoming_assignments|length }}</div>
+                <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-tasks" style="color:var(--sage);"></i> Pending Assignments</div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start;">
+            <!-- Main Panel -->
+            <div style="display:flex;flex-direction:column;gap:24px;">
+
+                <!-- Enrolled Courses with Progress -->
+                <div class="card" style="padding:28px;">
+                    <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-book-open" style="color:var(--sage);"></i> My Courses
+                    </h3>
+                    {% if course_details %}
+                    <div style="display:flex;flex-direction:column;gap:20px;">
+                        {% for item in course_details %}
+                        <div style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;display:grid;grid-template-columns:80px 1fr auto;gap:16px;align-items:center;transition:var(--transition);" onmouseover="this.style.borderColor='var(--mint)'" onmouseout="this.style.borderColor='var(--border)'">
+                            <div style="width:80px;height:60px;border-radius:8px;overflow:hidden;flex-shrink:0;">
+                                <img src="{{ item.course.image_url }}" alt="{{ item.course.title }}" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                            <div>
+                                <div style="font-weight:700;font-size:0.92rem;margin-bottom:4px;color:var(--text);">{{ item.course.title }}</div>
+                                <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:10px;">
+                                    {% if item.last_lesson %}<i class="fas fa-play-circle" style="color:var(--sage);"></i> Last: {{ item.last_lesson.title }}{% else %}Not started yet{% endif %}
+                                </div>
+                                <div class="progress-bar-wrap">
+                                    <div class="progress-bar-fill" style="width:{{ item.progress }}%;"></div>
+                                </div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;">{{ item.progress }}% completed</div>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+                                <a href="{% url 'course_detail' item.course.id %}" class="btn btn-primary btn-sm">Continue <i class="fas fa-arrow-right"></i></a>
+                                {% if item.progress == 100 %}
+                                <span class="badge badge-green"><i class="fas fa-check"></i> Complete</span>
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="feature-item bg-white p-4 rounded shadow-sm text-center">
-                                <i class="fa fa-user-edit fa-3x text-primary mb-3"></i>
-                                <h5 class="mb-3">Edit Profile</h5>
-                                <p>Update your personal information and account settings.</p>
-                                <a href="{% url 'profile' %}" class="btn btn-primary py-2 px-4">Edit Profile</a>
-                            </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div style="text-align:center;padding:40px 20px;color:var(--text-muted);">
+                        <i class="fas fa-book-open" style="font-size:3rem;color:var(--border);margin-bottom:16px;display:block;"></i>
+                        <p style="font-size:0.95rem;margin-bottom:16px;">You haven't enrolled in any courses yet.</p>
+                        <a href="{% url 'courses' %}" class="btn btn-primary">Browse Courses <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Upcoming Assignments -->
+                {% if upcoming_assignments %}
+                <div class="card" style="padding:28px;">
+                    <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-tasks" style="color:var(--sage);"></i> Upcoming Assignments
+                    </h3>
+                    {% for assignment in upcoming_assignments %}
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
+                        <div>
+                            <div style="font-weight:600;font-size:0.9rem;color:var(--text);">{{ assignment.title }}</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted);">{{ assignment.course.title }}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:0.78rem;color:#dc3545;font-weight:600;"><i class="fas fa-clock"></i> Due: {{ assignment.deadline|date:"M d, Y" }}</div>
+                            <a href="{% url 'course_detail' assignment.course.id %}" class="btn btn-outline btn-sm" style="margin-top:4px;">Submit</a>
                         </div>
                     </div>
-                    <div class="mt-5 text-center">
-                        <a href="{% url 'logout' %}" class="btn btn-danger py-2 px-4">Logout</a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Certificates -->
+                {% if certificates %}
+                <div class="card" style="padding:28px;">
+                    <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-certificate" style="color:var(--earth);"></i> My Certificates
+                    </h3>
+                    {% for cert in certificates %}
+                    <div style="display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,rgba(27,67,50,0.05),rgba(64,145,108,0.08));border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;">
+                        <div style="display:flex;align-items:center;gap:14px;">
+                            <div style="width:44px;height:44px;background:linear-gradient(135deg,var(--forest),var(--sage));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:1.2rem;">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight:700;font-size:0.9rem;color:var(--text);">{{ cert.course.title }}</div>
+                                <div style="font-size:0.75rem;color:var(--text-muted);">Cert No: {{ cert.certificate_number }}</div>
+                                <div style="font-size:0.75rem;color:var(--sage);">Issued: {{ cert.issued_date|date:"F d, Y" }}</div>
+                            </div>
+                        </div>
+                        <a href="{% url 'download_certificate' cert.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-download"></i> Download PDF
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div style="display:flex;flex-direction:column;gap:20px;">
+                <!-- Notifications -->
+                <div class="card" style="padding:24px;">
+                    <h4 style="font-weight:700;font-size:0.95rem;color:var(--forest);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-bell" style="color:var(--sage);"></i> Notifications
+                    </h4>
+                    {% if notifications %}
+                    {% for notif in notifications %}
+                    <div style="font-size:0.82rem;color:var(--text-muted);padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:flex-start;">
+                        <i class="fas fa-circle" style="font-size:0.4rem;color:var(--sage);margin-top:6px;flex-shrink:0;"></i>
+                        {{ notif.message }}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p style="font-size:0.85rem;color:var(--text-muted);text-align:center;padding:20px 0;">No notifications yet.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Upcoming Live Classes -->
+                {% if upcoming_live %}
+                <div class="card" style="padding:24px;">
+                    <h4 style="font-weight:700;font-size:0.95rem;color:var(--forest);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+                        <i class="fas fa-video" style="color:var(--sage);"></i> Upcoming Live Classes
+                    </h4>
+                    {% for live in upcoming_live %}
+                    <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+                        <div style="font-weight:600;font-size:0.88rem;color:var(--text);margin-bottom:2px;">{{ live.title }}</div>
+                        <div style="font-size:0.76rem;color:var(--text-muted);margin-bottom:8px;"><i class="fas fa-clock" style="color:var(--sage);"></i> {{ live.scheduled_time|date:"M d, Y H:i" }}</div>
+                        <a href="{{ live.meeting_link }}" target="_blank" class="btn btn-success btn-sm"><i class="fas fa-video"></i> Join Class</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Quick Actions -->
+                <div class="card" style="padding:24px;">
+                    <h4 style="font-weight:700;font-size:0.95rem;color:var(--forest);margin-bottom:16px;">Quick Actions</h4>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <a href="{% url 'courses' %}" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-search"></i> Browse Courses</a>
+                        <a href="{% url 'profile' %}" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-user-edit"></i> Edit Profile</a>
+                        <a href="{% url 'verify_certificate_search' %}" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-certificate"></i> Verify Certificate</a>
+                        <a href="{% url 'logout' %}" class="btn btn-danger btn-sm" style="justify-content:center;"><i class="fas fa-sign-out-alt"></i> Logout</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

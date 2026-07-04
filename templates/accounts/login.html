@@ -1,62 +1,71 @@
 {% extends 'index.html' %}
 {% load static %}
+{% block title %}Login – Karatina University Nature Club LMS{% endblock %}
 
 {% block content %}
-<!-- Header Start -->
-<div class="container-fluid bg-primary py-5 mb-5 page-header">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-10 text-center">
-                <h1 class="display-3 text-white animated slideInDown">Login</h1>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb justify-content-center">
-                        <li class="breadcrumb-item"><a class="text-white" href="{% url 'home' %}">Home</a></li>
-                        <li class="breadcrumb-item text-white active" aria-current="page">Login</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Header End -->
+<section class="page-hero">
+    <h1>Welcome Back</h1>
+    <div class="breadcrumb"><a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span><span>Login</span></div>
+</section>
 
-<!-- Login Start -->
-<div class="container-xxl py-5">
+<section style="padding:60px 0;background:var(--cream);min-height:calc(100vh - 300px);display:flex;align-items:center;">
     <div class="container">
-        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title bg-white text-center text-primary px-3">Login</h6>
-            <h1 class="mb-5">Student Login</h1>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-4 col-md-12 wow fadeInUp" data-wow-delay="0.5s">
-                <form method="post">
+        <div style="max-width:440px;margin:0 auto;">
+            <div class="card" style="padding:40px;">
+                <!-- Logos -->
+                <div style="text-align:center;margin-bottom:28px;">
+                    <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px;">
+                        <img src="{% static 'images/pics/logo.png' %}" alt="Karu Nature Club" style="height:52px;">
+                    </div>
+                    <h2 style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--forest);margin-bottom:6px;">Sign In</h2>
+                    <p style="font-size:0.88rem;color:var(--text-muted);">Enter your credentials to access your dashboard</p>
+                </div>
+
+                {% if message %}
+                <div class="alert {% if 'Invalid' in message or 'suspended' in message %}alert-error{% elif 'pending' in message %}alert-warning{% else %}alert-info{% endif %}">
+                    <i class="fas fa-info-circle"></i> {{ message }}
+                </div>
+                {% endif %}
+
+                <form method="post" id="loginForm">
                     {% csrf_token %}
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="form-floating">
-                                <input type="email" class="form-control" id="email" name="email"
-                                    placeholder="Your Email" required>
-                                <label for="email">Your Email</label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-floating">
-                                <input type="password" class="form-control" id="password" name="password"
-                                    placeholder="Password" required>
-                                <label for="password">Password</label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <button class="btn btn-primary w-100 py-3" type="submit">Login</button>
-                        </div>
-                        <div class="col-12 text-center">
-                            <p>{{ message }}</p>
+                    <div class="form-group">
+                        <label class="form-label" for="email"><i class="fas fa-envelope" style="color:var(--sage);margin-right:6px;"></i>Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com" required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password"><i class="fas fa-lock" style="color:var(--sage);margin-right:6px;"></i>Password</label>
+                        <div style="position:relative;">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Your password" required style="padding-right:44px;">
+                            <button type="button" onclick="togglePwd()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);" title="Show/hide password">
+                                <i class="fas fa-eye" id="eyeIcon"></i>
+                            </button>
                         </div>
                     </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;">
+                        Sign In <i class="fas fa-arrow-right"></i>
+                    </button>
                 </form>
+
+                <div style="text-align:center;margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
+                    <p style="font-size:0.875rem;color:var(--text-muted);">Don't have an account?
+                        <a href="{% url 'register' %}" style="color:var(--forest);font-weight:700;">Register here</a>
+                    </p>
+                    <p style="margin-top:10px;font-size:0.875rem;color:var(--text-muted);">Want to verify a certificate?
+                        <a href="{% url 'verify_certificate_search' %}" style="color:var(--sage);">Click here</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Login End -->
+</section>
+
+<script>
+function togglePwd() {
+    const pwd = document.getElementById('password');
+    const eye = document.getElementById('eyeIcon');
+    if (pwd.type === 'password') { pwd.type = 'text'; eye.classList.replace('fa-eye', 'fa-eye-slash'); }
+    else { pwd.type = 'password'; eye.classList.replace('fa-eye-slash', 'fa-eye'); }
+}
+</script>
 {% endblock %}

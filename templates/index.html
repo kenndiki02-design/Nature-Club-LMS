@@ -1,727 +1,1105 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-theme="light">
 <head>
-    {% load static %}
-    <meta charset="utf-8">
-    <title> Nature Club E-learning System</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Karatina University Nature Club LMS{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Karatina University Nature Club Online Learning Management System – Conserving Nature through Education.{% endblock %}">
+    <link rel="icon" href="{% static 'images/pics/logo.png' %}">
 
-    <!-- Favicon -->
-    <link href="{% static 'images/pics/logo.png' %}" rel="icon">
-
-    <!-- Google Web Fonts -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
-    <!-- Icon Font Stylesheet -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <!-- Libraries Stylesheet -->
-    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
-    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <style>
+        /* ============================================
+           CSS VARIABLES & THEME TOKENS
+        ============================================ */
+        :root {
+            --forest: #1b4332;
+            --forest-dark: #0f2a1e;
+            --forest-light: #2d6a4f;
+            --sage: #40916c;
+            --mint: #52b788;
+            --lime: #74c69d;
+            --earth: #d4a373;
+            --sand: #f4e8c1;
+            --cream: #f8f9f4;
+            --white: #ffffff;
+            --dark: #1a1a2e;
+            --text: #2d3142;
+            --text-muted: #6b7280;
+            --border: #d1e7dd;
+            --shadow: rgba(27,67,50,0.12);
+            --shadow-lg: rgba(27,67,50,0.25);
+            --gradient-hero: linear-gradient(135deg, #0f2a1e 0%, #1b4332 50%, #2d6a4f 100%);
+            --gradient-card: linear-gradient(135deg, rgba(27,67,50,0.08) 0%, rgba(64,145,108,0.08) 100%);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+        [data-theme="dark"] {
+            --cream: #0f1a14;
+            --white: #1a2d22;
+            --text: #e8f5e9;
+            --text-muted: #9ab8a0;
+            --border: #2d4a38;
+            --shadow: rgba(0,0,0,0.4);
+            --shadow-lg: rgba(0,0,0,0.6);
+        }
 
-    <!-- Template Stylesheet -->
-    <!-- <link href="{% static 'css/style.css' %}" rel="stylesheet"> -->
-    {% load sass_tags %}
-    <link href="{% sass_src 'scss/bootstrap.scss' %}" rel="stylesheet" type="text/css">
-    <link href="{% sass_src 'scss/style.scss' %}" rel="stylesheet" type="text/css">
+        /* ============================================
+           RESET & BASE
+        ============================================ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; height: auto; }
+
+        /* ============================================
+           UTILITY CLASSES
+        ============================================ */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .container-fluid { width: 100%; padding: 0; }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 28px; border-radius: 50px;
+            font-weight: 600; font-size: 0.9rem;
+            cursor: pointer; border: none; transition: var(--transition);
+            text-decoration: none; letter-spacing: 0.4px;
+        }
+        .btn-primary {
+            background: var(--forest); color: var(--white);
+            box-shadow: 0 4px 15px rgba(27,67,50,0.35);
+        }
+        .btn-primary:hover {
+            background: var(--forest-light); transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(27,67,50,0.45);
+        }
+        .btn-outline {
+            background: transparent; color: var(--forest);
+            border: 2px solid var(--forest);
+        }
+        .btn-outline:hover {
+            background: var(--forest); color: var(--white);
+            transform: translateY(-2px);
+        }
+        .btn-white {
+            background: var(--white); color: var(--forest);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .btn-white:hover { background: var(--cream); transform: translateY(-2px); }
+        .btn-sm { padding: 8px 18px; font-size: 0.82rem; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; transform: translateY(-2px); }
+        .btn-success { background: var(--sage); color: white; }
+        .btn-success:hover { background: var(--forest-light); transform: translateY(-2px); }
+
+        .card {
+            background: var(--white); border-radius: var(--radius);
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: var(--transition); overflow: hidden;
+        }
+        .card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px var(--shadow-lg); }
+
+        .badge {
+            display: inline-block; padding: 4px 12px;
+            border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+        }
+        .badge-green { background: #d1fae5; color: #065f46; }
+        .badge-blue { background: #dbeafe; color: #1e40af; }
+        .badge-orange { background: #fed7aa; color: #9a3412; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+
+        .section-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: var(--forest); padding: 6px 18px;
+            border-radius: 20px; font-size: 0.8rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700; color: var(--text);
+            line-height: 1.2; margin-bottom: 16px;
+        }
+        .section-subtitle {
+            font-size: 1rem; color: var(--text-muted);
+            max-width: 580px; margin: 0 auto;
+        }
+
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt-1 { margin-top: 8px; } .mt-2 { margin-top: 16px; } .mt-3 { margin-top: 24px; }
+        .mt-4 { margin-top: 32px; } .mt-5 { margin-top: 48px; }
+        .mb-1 { margin-bottom: 8px; } .mb-2 { margin-bottom: 16px; } .mb-3 { margin-bottom: 24px; }
+        .mb-4 { margin-bottom: 32px; } .mb-5 { margin-bottom: 48px; }
+        .py-5 { padding-top: 80px; padding-bottom: 80px; }
+        .py-3 { padding-top: 40px; padding-bottom: 40px; }
+        .grid { display: grid; gap: 24px; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+        .flex { display: flex; } .flex-center { display: flex; align-items: center; justify-content: center; }
+        .flex-between { display: flex; align-items: center; justify-content: space-between; }
+        .gap-2 { gap: 16px; } .gap-3 { gap: 24px; }
+
+        /* Alerts */
+        .alert {
+            padding: 14px 20px; border-radius: var(--radius-sm);
+            margin-bottom: 16px; font-size: 0.9rem; font-weight: 500;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .alert-success { background: #d1fae5; color: #065f46; border-left: 4px solid var(--sage); }
+        .alert-error { background: #fee2e2; color: #991b1b; border-left: 4px solid #dc3545; }
+        .alert-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
+        .alert-info { background: #dbeafe; color: #1e3a8a; border-left: 4px solid #3b82f6; }
+
+        /* Progress Bar */
+        .progress-bar-wrap {
+            background: #e5e7eb; border-radius: 999px;
+            height: 8px; overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%; border-radius: 999px;
+            background: linear-gradient(90deg, var(--sage), var(--mint));
+            transition: width 0.8s ease;
+        }
+
+        /* ============================================
+           NAVBAR
+        ============================================ */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(27,67,50,0.1);
+            padding: 0 20px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            transition: var(--transition);
+        }
+        [data-theme="dark"] .navbar {
+            background: rgba(26,45,34,0.95);
+            border-bottom-color: rgba(82,183,136,0.15);
+        }
+        .navbar-brand {
+            display: flex; align-items: center; gap: 12px; text-decoration: none;
+        }
+        .navbar-brand img { height: 48px; width: auto; }
+        .navbar-brand .brand-text { display: flex; flex-direction: column; }
+        .navbar-brand .brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem; font-weight: 700; color: var(--forest); line-height: 1.2;
+        }
+        .navbar-brand .brand-sub {
+            font-size: 0.7rem; color: var(--text-muted); font-weight: 500;
+        }
+        [data-theme="dark"] .navbar-brand .brand-name { color: var(--mint); }
+
+        .navbar-nav { display: flex; align-items: center; gap: 4px; list-style: none; }
+        .nav-link {
+            padding: 8px 14px; border-radius: 8px;
+            color: var(--text); font-weight: 500; font-size: 0.88rem;
+            transition: var(--transition); cursor: pointer;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: rgba(27,67,50,0.08); color: var(--forest);
+        }
+        [data-theme="dark"] .nav-link:hover, [data-theme="dark"] .nav-link.active {
+            background: rgba(82,183,136,0.12); color: var(--mint);
+        }
+
+        .dropdown { position: relative; }
+        .dropdown-menu {
+            display: none; position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+            background: var(--white); border-radius: var(--radius-sm);
+            box-shadow: 0 10px 40px var(--shadow-lg); min-width: 180px;
+            border: 1px solid var(--border); padding: 6px; z-index: 1001;
+        }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-item {
+            display: block; padding: 8px 14px; border-radius: 6px;
+            color: var(--text); font-size: 0.875rem; font-weight: 500;
+            transition: var(--transition);
+        }
+        .dropdown-item:hover { background: rgba(27,67,50,0.07); color: var(--forest); }
+
+        .navbar-actions { display: flex; align-items: center; gap: 12px; }
+        .theme-toggle {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(27,67,50,0.07); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; color: var(--forest); transition: var(--transition);
+        }
+        .theme-toggle:hover { background: rgba(27,67,50,0.15); transform: rotate(20deg); }
+        [data-theme="dark"] .theme-toggle { background: rgba(82,183,136,0.12); color: var(--mint); }
+
+        .hamburger {
+            display: none; background: none; border: none; cursor: pointer;
+            flex-direction: column; gap: 5px; padding: 4px;
+        }
+        .hamburger span {
+            display: block; width: 24px; height: 2px;
+            background: var(--forest); border-radius: 2px; transition: var(--transition);
+        }
+        [data-theme="dark"] .hamburger span { background: var(--mint); }
+
+        @media (max-width: 900px) {
+            .hamburger { display: flex; }
+            .nav-menu {
+                display: none; position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
+                background: var(--white); flex-direction: column; padding: 24px;
+                gap: 8px; overflow-y: auto; z-index: 999;
+            }
+            [data-theme="dark"] .nav-menu { background: var(--dark); }
+            .nav-menu.open { display: flex; }
+            .navbar-nav { flex-direction: column; align-items: stretch; width: 100%; }
+            .nav-link { padding: 12px 16px; border-radius: 10px; }
+            .dropdown-menu { display: none !important; }
+        }
+
+        /* ============================================
+           HERO SECTION
+        ============================================ */
+        .hero {
+            min-height: 100vh; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background: var(--gradient-hero);
+        }
+        .hero-particles {
+            position: absolute; inset: 0; overflow: hidden;
+        }
+        .particle {
+            position: absolute; border-radius: 50%;
+            background: rgba(82, 183, 136, 0.15);
+            animation: float 6s ease-in-out infinite;
+        }
+        .particle:nth-child(1) { width: 80px; height: 80px; top: 15%; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 50px; height: 50px; top: 70%; left: 85%; animation-delay: 1.5s; }
+        .particle:nth-child(3) { width: 120px; height: 120px; top: 50%; left: 5%; animation-delay: 3s; }
+        .particle:nth-child(4) { width: 40px; height: 40px; top: 20%; right: 10%; animation-delay: 0.8s; }
+        .particle:nth-child(5) { width: 100px; height: 100px; bottom: 15%; left: 40%; animation-delay: 2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+            50% { transform: translateY(-30px) rotate(180deg); opacity: 1; }
+        }
+
+        .hero-content {
+            position: relative; z-index: 2;
+            max-width: 800px; padding: 40px 20px; margin-top: 72px;
+        }
+        .hero-logos {
+            display: flex; align-items: center; justify-content: center; gap: 24px;
+            margin-bottom: 32px; flex-wrap: wrap;
+        }
+        .hero-logo { height: 70px; width: auto; filter: brightness(1.1) drop-shadow(0 4px 12px rgba(0,0,0,0.3)); }
+        .hero-logo-sep { width: 1px; height: 50px; background: rgba(255,255,255,0.3); }
+        .hero-badge {
+            display: inline-block; background: rgba(82,183,136,0.2);
+            border: 1px solid rgba(82,183,136,0.4); color: var(--lime);
+            padding: 6px 18px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 600; letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 20px;
+        }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 6vw, 4rem);
+            color: var(--white); font-weight: 700; line-height: 1.15;
+            margin-bottom: 20px;
+        }
+        .hero-title .highlight { color: var(--lime); font-style: italic; }
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: rgba(255,255,255,0.8); margin-bottom: 36px;
+            max-width: 600px; margin-left: auto; margin-right: auto;
+        }
+        .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 60px; }
+
+        .hero-stats {
+            display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+            padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.15);
+        }
+        .hero-stat { text-align: center; }
+        .hero-stat-number {
+            font-size: 2rem; font-weight: 700; color: var(--lime);
+            font-family: 'Playfair Display', serif;
+        }
+        .hero-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+        /* ============================================
+           FEATURES / BENEFITS SECTION
+        ============================================ */
+        .features-section { padding: 80px 0; background: var(--white); }
+        [data-theme="dark"] .features-section { background: var(--white); }
+
+        .feature-card {
+            padding: 32px; border-radius: var(--radius);
+            background: var(--cream); border: 1px solid var(--border);
+            transition: var(--transition); text-align: center;
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px var(--shadow-lg);
+            border-color: var(--mint);
+        }
+        .feature-icon {
+            width: 72px; height: 72px; border-radius: 20px;
+            background: linear-gradient(135deg, var(--forest), var(--sage));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: var(--white); margin: 0 auto 20px;
+            box-shadow: 0 8px 20px rgba(27,67,50,0.3);
+        }
+        .feature-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: var(--forest); }
+        .feature-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+
+        /* ============================================
+           COURSES SECTION
+        ============================================ */
+        .courses-section { padding: 80px 0; background: var(--cream); }
+
+        .course-card {
+            background: var(--white); border-radius: var(--radius);
+            overflow: hidden; box-shadow: 0 4px 20px var(--shadow);
+            transition: var(--transition);
+        }
+        .course-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px var(--shadow-lg); }
+
+        .course-img-wrap { position: relative; height: 200px; overflow: hidden; }
+        .course-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        .course-card:hover .course-img-wrap img { transform: scale(1.07); }
+        .course-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(15,42,30,0.8) 0%, transparent 50%);
+        }
+        .course-badge-overlay {
+            position: absolute; top: 12px; left: 12px;
+        }
+        .course-actions-overlay {
+            position: absolute; bottom: 12px; left: 12px; right: 12px;
+            display: flex; gap: 8px;
+        }
+
+        .course-body { padding: 20px; }
+        .course-category { font-size: 0.75rem; font-weight: 700; color: var(--sage); text-transform: uppercase; letter-spacing: 0.5px; }
+        .course-title { font-size: 1rem; font-weight: 700; margin: 8px 0 10px; color: var(--text); line-height: 1.4; }
+        .course-meta {
+            display: flex; gap: 16px; font-size: 0.8rem; color: var(--text-muted);
+            border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px;
+        }
+        .course-meta span { display: flex; align-items: center; gap: 5px; }
+
+        .rating-stars { color: #f59e0b; font-size: 0.8rem; }
+
+        /* ============================================
+           TESTIMONIALS SECTION
+        ============================================ */
+        .testimonials-section { padding: 80px 0; background: var(--white); }
+        [data-theme="dark"] .testimonials-section { background: var(--white); }
+
+        .testimonial-card {
+            background: var(--cream); border-radius: var(--radius);
+            padding: 28px; border: 1px solid var(--border);
+            transition: var(--transition); position: relative;
+        }
+        .testimonial-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px var(--shadow-lg); }
+        .testimonial-quote {
+            font-size: 3rem; color: var(--mint); line-height: 1;
+            font-family: 'Playfair Display', serif; margin-bottom: 12px;
+        }
+        .testimonial-text { font-size: 0.92rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 20px; }
+        .testimonial-author { display: flex; align-items: center; gap: 12px; }
+        .testimonial-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            object-fit: cover; border: 2px solid var(--mint);
+        }
+        .testimonial-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+        .testimonial-role { font-size: 0.78rem; color: var(--text-muted); }
+
+        /* ============================================
+           FAQ SECTION
+        ============================================ */
+        .faq-section { padding: 80px 0; background: var(--cream); }
+
+        .faq-item {
+            background: var(--white); border-radius: var(--radius-sm);
+            border: 1px solid var(--border); margin-bottom: 12px;
+            overflow: hidden; transition: var(--transition);
+        }
+        .faq-question {
+            padding: 18px 24px; cursor: pointer; font-weight: 600; font-size: 0.95rem;
+            display: flex; align-items: center; justify-content: space-between;
+            color: var(--text);
+        }
+        .faq-question:hover { color: var(--forest); }
+        .faq-icon { font-size: 1.2rem; color: var(--sage); transition: transform 0.3s ease; }
+        .faq-answer {
+            display: none; padding: 0 24px 18px;
+            font-size: 0.9rem; color: var(--text-muted); line-height: 1.7;
+        }
+        .faq-item.open .faq-answer { display: block; }
+        .faq-item.open .faq-icon { transform: rotate(45deg); color: var(--forest); }
+
+        /* ============================================
+           STATS SECTION
+        ============================================ */
+        .stats-section {
+            padding: 60px 0;
+            background: linear-gradient(135deg, var(--forest-dark), var(--forest));
+        }
+        .stat-item { text-align: center; }
+        .stat-number {
+            font-size: clamp(2rem, 5vw, 3rem); font-weight: 800;
+            color: var(--lime); font-family: 'Playfair Display', serif;
+        }
+        .stat-label { font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-top: 6px; }
+
+        /* ============================================
+           CONTACT SECTION
+        ============================================ */
+        .contact-section { padding: 80px 0; background: var(--white); }
+        [data-theme="dark"] .contact-section { background: var(--white); }
+
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+        .form-control {
+            width: 100%; padding: 12px 16px; border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border); background: var(--cream);
+            color: var(--text); font-size: 0.9rem; font-family: 'Inter', sans-serif;
+            transition: var(--transition); outline: none;
+        }
+        .form-control:focus { border-color: var(--sage); background: var(--white); box-shadow: 0 0 0 3px rgba(64,145,108,0.12); }
+        textarea.form-control { min-height: 120px; resize: vertical; }
+        select.form-control { cursor: pointer; appearance: none; }
+
+        /* ============================================
+           FOOTER
+        ============================================ */
+        .footer {
+            background: var(--forest-dark); color: rgba(255,255,255,0.8);
+            padding: 60px 0 0;
+        }
+        .footer-brand { margin-bottom: 20px; }
+        .footer-brand img { height: 52px; margin-bottom: 12px; }
+        .footer-brand p { font-size: 0.88rem; line-height: 1.7; color: rgba(255,255,255,0.6); }
+        .footer-title { font-weight: 700; font-size: 0.95rem; color: var(--white); margin-bottom: 18px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a { color: rgba(255,255,255,0.6); font-size: 0.875rem; transition: var(--transition); }
+        .footer-links a:hover { color: var(--mint); padding-left: 4px; }
+        .social-links { display: flex; gap: 12px; margin-top: 16px; }
+        .social-link {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.7); font-size: 0.9rem; transition: var(--transition);
+        }
+        .social-link:hover { background: var(--sage); border-color: var(--sage); color: white; transform: translateY(-3px); }
+        .footer-bottom {
+            margin-top: 48px; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+        }
+        .footer-bottom p { font-size: 0.82rem; color: rgba(255,255,255,0.45); }
+
+        /* ============================================
+           SPINNER
+        ============================================ */
+        .page-loader {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--forest-dark);
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 16px; transition: opacity 0.5s ease;
+        }
+        .page-loader.hidden { opacity: 0; pointer-events: none; }
+        .loader-logo { height: 70px; animation: pulse 1.5s ease-in-out infinite; }
+        .loader-ring {
+            width: 50px; height: 50px; border-radius: 50%;
+            border: 3px solid rgba(82,183,136,0.2);
+            border-top-color: var(--mint);
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.7; transform: scale(0.97); } 50% { opacity: 1; transform: scale(1.03); } }
+
+        /* ============================================
+           MESSAGES / TOASTS
+        ============================================ */
+        .toast-container {
+            position: fixed; top: 88px; right: 20px; z-index: 9998;
+            display: flex; flex-direction: column; gap: 10px; max-width: 360px;
+        }
+        .toast {
+            background: var(--white); padding: 14px 18px; border-radius: var(--radius-sm);
+            box-shadow: 0 8px 30px var(--shadow-lg); font-size: 0.875rem; font-weight: 500;
+            display: flex; align-items: center; gap: 10px;
+            animation: slideIn 0.3s ease; border-left: 4px solid var(--sage);
+        }
+        .toast.error { border-left-color: #dc3545; }
+        .toast.warning { border-left-color: #f59e0b; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* ============================================
+           PAGE HEADER (inner pages)
+        ============================================ */
+        .page-hero {
+            background: var(--gradient-hero);
+            padding: 100px 0 60px;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .page-hero::before {
+            content: ''; position: absolute; inset: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="15" fill="rgba(82,183,136,0.06)"/><circle cx="80" cy="70" r="25" fill="rgba(82,183,136,0.04)"/></svg>');
+        }
+        .page-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--white); position: relative; z-index: 1; }
+        .breadcrumb { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.875rem; color: rgba(255,255,255,0.65); position: relative; z-index: 1; margin-top: 12px; }
+        .breadcrumb a { color: var(--lime); }
+        .breadcrumb-sep { opacity: 0.4; }
+
+        /* Animations for sections */
+        .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+    </style>
+    {% block extra_css %}{% endblock %}
 </head>
-
 <body>
-    <!-- Spinner Start -->
-    <div id="spinner"
-        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Loading...</span>
-            <!--            <img src="img/pics/logo.png" alt="middle of spinner" width="50" height="50">-->
+
+<!-- Page Loader -->
+<div class="page-loader" id="pageLoader">
+    <img src="{% static 'images/pics/logo.png' %}" alt="Logo" class="loader-logo">
+    <div class="loader-ring"></div>
+</div>
+
+<!-- Toast Messages -->
+{% if messages %}
+<div class="toast-container" id="toastContainer">
+    {% for message in messages %}
+    <div class="toast {% if message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% endif %}">
+        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-times-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- ======================== NAVBAR ======================== -->
+<nav class="navbar" id="mainNavbar">
+    <a href="{% url 'home' %}" class="navbar-brand">
+        <img src="{% static 'images/pics/logo.png' %}" alt="Karu Nature Club Logo">
+        <div class="brand-text">
+            <span class="brand-name">KaruNature LMS</span>
+            <span class="brand-sub">Conserving Nature through Education</span>
+        </div>
+    </a>
+
+    <!-- Hamburger -->
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+    </button>
+
+    <div class="nav-menu" id="navMenu">
+        <ul class="navbar-nav">
+            <li><a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+            <li><a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a></li>
+            <li><a href="{% url 'courses' %}" class="nav-link {% if request.resolver_match.url_name == 'courses' %}active{% endif %}">Courses</a></li>
+            <li class="dropdown">
+                <a class="nav-link">Pages <i class="fas fa-chevron-down" style="font-size:0.65rem;margin-left:4px;"></i></a>
+                <div class="dropdown-menu">
+                    <a href="{% url 'team' %}" class="dropdown-item"><i class="fas fa-users me-2" style="color:var(--sage);width:18px;"></i>Our Team</a>
+                    <a href="{% url 'testimonial' %}" class="dropdown-item"><i class="fas fa-quote-left me-2" style="color:var(--sage);width:18px;"></i>Testimonials</a>
+                    <a href="{% url 'verify_certificate_search' %}" class="dropdown-item"><i class="fas fa-certificate me-2" style="color:var(--sage);width:18px;"></i>Verify Certificate</a>
+                    <a href="{% url 'contact' %}" class="dropdown-item"><i class="fas fa-envelope me-2" style="color:var(--sage);width:18px;"></i>Contact Us</a>
+                </div>
+            </li>
+            {% if request.user.is_authenticated %}
+            <li class="dropdown">
+                <a class="nav-link"><i class="fas fa-user-circle me-1"></i>{{ request.user.student.fullname|default:request.user.username }} <i class="fas fa-chevron-down" style="font-size:0.65rem;margin-left:4px;"></i></a>
+                <div class="dropdown-menu">
+                    {% if request.user.student.role == 'admin' or request.user.is_superuser %}
+                    <a href="{% url 'admin_dashboard' %}" class="dropdown-item"><i class="fas fa-tachometer-alt me-2" style="color:var(--sage);width:18px;"></i>Admin Dashboard</a>
+                    {% elif request.user.student.role == 'instructor' %}
+                    <a href="{% url 'instructor_dashboard' %}" class="dropdown-item"><i class="fas fa-chalkboard-teacher me-2" style="color:var(--sage);width:18px;"></i>Instructor Dashboard</a>
+                    {% else %}
+                    <a href="{% url 'student_dashboard' %}" class="dropdown-item"><i class="fas fa-graduation-cap me-2" style="color:var(--sage);width:18px;"></i>My Dashboard</a>
+                    {% endif %}
+                    <a href="{% url 'profile' %}" class="dropdown-item"><i class="fas fa-cog me-2" style="color:var(--sage);width:18px;"></i>Profile Settings</a>
+                    <a href="{% url 'logout' %}" class="dropdown-item" style="color:#dc3545;"><i class="fas fa-sign-out-alt me-2" style="width:18px;"></i>Logout</a>
+                </div>
+            </li>
+            {% else %}
+            <li><a href="{% url 'login' %}" class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}">Login</a></li>
+            {% endif %}
+        </ul>
+
+        <div class="navbar-actions">
+            <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon" id="themeIcon"></i>
+            </button>
+            {% if not request.user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn btn-primary btn-sm">Join Now <i class="fas fa-arrow-right"></i></a>
+            {% endif %}
         </div>
     </div>
-    <!-- Spinner End -->
+</nav>
 
+<!-- ======================== MAIN CONTENT ======================== -->
+{% block content %}
 
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="{% url 'home' %}" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="img-fluid"><img src="{% static 'images/pics/logo.png' %}" alt=""
-                        width="90" height="50"></i>Nature Club E-learning</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="{% url 'home' %}" class="nav-item nav-link active">Home</a>
-                <a href="{% url 'about' %}" class="nav-item nav-link">About</a>
-                <a href="{% url 'courses' %}" class="nav-item nav-link">Courses</a>
-                <div class="nav-item dropdown">
-                    <a href="{% url 'about' %}" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu fade-down m-0">
-                        <a href="{% url 'team' %}" class="dropdown-item">Our Team</a>
-                        <a href="{% url 'testimonial' %}" class="dropdown-item">Testimonial</a>
-                        <a href="{% url '404' %}" class="dropdown-item">404 Page</a>
-                    </div>
-                </div>
-                <a href="{% url 'login' %}" class="nav-item nav-link">Log In</a>
-            </div>
-            <a href="{% url 'register' %}" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Join
-                Now<i class="fa fa-arrow-right ms-3"></i></a>
-        </div>
-    </nav>
-    <!-- Navbar End -->
-    {% block content %}
-
-
-    <!-- Carousel Start -->
-    <div class="container-fluid p-0 mb-5">
-        <div class="owl-carousel header-carousel position-relative">
-            <div class="owl-carousel-item position-relative">
-                <img class="img-fluid" src="{% static 'images/pics/carousel 1.jpg' %}" alt="">
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
-                    style="background: rgba(24, 29, 56, .7);">
-                    <div class="container">
-                        <div class="row justify-content-start">
-                            <div class="col-sm-10 col-lg-8">
-                                <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Karu Nature Club LMS
-                                </h5>
-                                <h1 class="display-3 text-white animated slideInDown">Editorial Department</h1>
-                                <p class="fs-5 text-white mb-4 pb-2">Welcome to Nature Club Editorial Learning
-                                    Management System where you are taught all the skills required by one in the
-                                    editorial department.</p>
-                                <a href="{% url 'about' %}"
-                                    class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
-                                <a href="register.html" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join
-                                    Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="owl-carousel-item position-relative">
-                <img class="img-fluid" src="{% static 'images/pics/carousel 2.jpg' %}" alt="">
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
-                    style="background: rgba(24, 29, 56, .7);">
-                    <div class="container">
-                        <div class="row justify-content-start">
-                            <div class="col-sm-10 col-lg-8">
-                                <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Karu Nature Club LMS
-                                </h5>
-                                <h1 class="display-3 text-white animated slideInDown">Editorial Department</h1>
-                                <p class="fs-5 text-white mb-4 pb-2">Welcome to Nature Club Editorial Learning
-                                    Management System where you are taught all the skills required by one in the
-                                    editorial department.</p>
-                                <a href="{% url 'about' %}"
-                                    class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
-                                <a href="register.html" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join
-                                    Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- ============ HERO SECTION ============ -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
     </div>
-    <!-- Carousel End -->
-
-
-    <!-- Service Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="service-item text-center pt-3">
-                        <div class="p-4">
-                            <i class="fa fa-3x fa-graduation-cap text-primary mb-4"></i>
-                            <h5 class="mb-3">Skilled Instructors</h5>
-                            <p>Our platform is powered by experienced instructors who bring both expertise and
-                                passion
-                                to every lesson. With backgrounds in diverse fields, they combine academic
-                                knowledge
-                                with real-world insights to deliver engaging, practical, and easy-to-follow
-                                learning
-                                experiences. Each instructor is dedicated to guiding learners step by step,
-                                offering
-                                personalized support, and ensuring that complex concepts are made clear and
-                                accessible.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="service-item text-center pt-3">
-                        <div class="p-4">
-                            <i class="fa fa-3x fa-globe text-primary mb-4"></i>
-                            <h5 class="mb-3">Online Classes</h5>
-                            <p>Our online courses are designed to fit your schedule and learning style. With
-                                interactive
-                                lessons, multimedia resources, and practical assignments, you can learn anytime,
-                                anywhere. Each course is carefully structured to guide you from foundational
-                                concepts to
-                                advanced skills, ensuring steady progress and measurable results.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="service-item text-center pt-3">
-                        <div class="p-4">
-                            <i class="fa fa-3x fa-home text-primary mb-4"></i>
-                            <h5 class="mb-3">Home Projects</h5>
-                            <p>Our home projects bring learning to life by turning knowledge into practical
-                                action. Each
-                                project is designed to be completed at home with simple materials, making it
-                                easy to
-                                apply new skills in real-world settings. From creative builds to science
-                                experiments and
-                                DIY innovations, these projects encourage problem-solving, creativity, and
-                                confidence.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
-                    <div class="service-item text-center pt-3">
-                        <div class="p-4">
-                            <i class="fa fa-3x fa-book-open text-primary mb-4"></i>
-                            <h5 class="mb-3">Book Library</h5>
-                            <p>Our book library gives learners instant access to a wide collection of
-                                educational and
-                                reference materials. From textbooks and research papers to inspiring reads and
-                                practical
-                                guides, the library is designed to support every stage of learning. With easy
-                                search and
-                                categorization, you can quickly find the resources you need, explore new topics,
-                                and
-                                deepen your understanding.</p>
-                        </div>
-                    </div>
-                </div>
+    <div class="hero-content">
+        <!-- Both Logos -->
+        <div class="hero-logos">
+            <img src="{% static 'images/pics/logo.png' %}" alt="Karu Nature Club" class="hero-logo">
+            <div class="hero-logo-sep"></div>
+            <img src="{% static 'images/pics/karu_uni_logo.png' %}" alt="Karatina University" class="hero-logo" style="background:white;padding:6px 10px;border-radius:8px;">
+        </div>
+        <div class="hero-badge">🌿 Conserving Nature · Inspiring Excellence</div>
+        <h1 class="hero-title">
+            Learn. Grow. <span class="highlight">Conserve.</span><br>
+            Karatina University Nature Club LMS
+        </h1>
+        <p class="hero-subtitle">
+            The official e-learning platform of the Karatina University Nature Club – where passion for nature meets professional skill development.
+        </p>
+        <div class="hero-cta">
+            <a href="{% url 'register' %}" class="btn btn-white">Get Started <i class="fas fa-arrow-right"></i></a>
+            <a href="{% url 'courses' %}" class="btn" style="background:rgba(255,255,255,0.12);color:white;border:1.5px solid rgba(255,255,255,0.3);">Browse Courses <i class="fas fa-search"></i></a>
+            <a href="{% url 'login' %}" class="btn btn-outline" style="border-color:var(--lime);color:var(--lime);">Login <i class="fas fa-sign-in-alt"></i></a>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-number">{{ total_students }}+</div>
+                <div class="hero-stat-label">Active Students</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">{{ total_courses }}+</div>
+                <div class="hero-stat-label">Courses Available</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">{{ total_instructors }}+</div>
+                <div class="hero-stat-label">Expert Instructors</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">100%</div>
+                <div class="hero-stat-label">Free to Join</div>
             </div>
         </div>
     </div>
-    <!-- Service End -->
+</section>
 
-
-    <!-- About Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
-                    <div class="position-relative h-100">
-                        <img class="img-fluid position-absolute w-100 h-100" src="{% static 'images/pics/about.jpg' %}"
-                            alt="" style="object-fit: cover;">
-                    </div>
-                </div>
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <h6 class="section-title bg-white text-start text-primary pe-3">About Us</h6>
-                    <h1 class="mb-4">Welcome to eLEARNING</h1>
-                    <p class="mb-4">We are an innovative e-learning platform of Karu Nature Club dedicated to
-                        making
-                        education accessible, flexible, and inspiring. By combining skilled instructors,
-                        interactive
-                        online courses, practical home projects, and a rich digital book library, we empower
-                        learners to
-                        grow at their own pace. Our mission is to transform knowledge into opportunity, helping
-                        individuals build skills, confidence, and a brighter future.</p>
-                    <div class="row gy-2 gx-4 mb-4">
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Skilled
-                                Instructors</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Online Classes
-                            </p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>International
-                                Certificate
-                            </p>
-                            <!--                        </div>-->
-                            <!--                        <div class="col-sm-6">-->
-                            <!--                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Skilled Instructors</p>-->
-                            <!--                        </div>-->
-                            <!--                        <div class="col-sm-6">-->
-                            <!--                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Online Classes</p>-->
-                            <!--                        </div>-->
-                            <!--                        <div class="col-sm-6">-->
-                            <!--                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>International Certificate</p>-->
-                            <!--                        </div>-->
-                        </div>
-                        <a class="btn btn-primary py-3 px-5 mt-2" href="{% url 'about' %}">Read More</a>
-                    </div>
-                </div>
+<!-- ============ BENEFITS / FEATURES ============ -->
+<section class="features-section">
+    <div class="container">
+        <div class="text-center mb-5 fade-up">
+            <div class="section-label">Why Choose Us</div>
+            <h2 class="section-title">Everything You Need to Succeed</h2>
+            <p class="section-subtitle">A complete learning experience from enrollment to certification, all in one platform.</p>
+        </div>
+        <div class="grid grid-3 fade-up">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-video"></i></div>
+                <h3>HD Video Lessons</h3>
+                <p>Watch professionally recorded lessons anytime, anywhere, on any device. Continue exactly where you left off.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-file-download"></i></div>
+                <h3>Downloadable Resources</h3>
+                <p>Access PDFs, presentations, images, and ZIP files. Build your personal resource library for offline study.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-video" style="content:''"></i><i class="fab fa-google" style="font-size:1.5rem;"></i></div>
+                <h3>Live Classes</h3>
+                <p>Join interactive sessions via Google Meet, Zoom, or Microsoft Teams with a single click.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-tasks"></i></div>
+                <h3>Assignments & Grading</h3>
+                <p>Submit your work online, receive expert feedback, and track your grades in real time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-certificate"></i></div>
+                <h3>Verified Certificates</h3>
+                <p>Earn professional certificates upon course completion with a QR-verified unique certificate number.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h3>Progress Tracking</h3>
+                <p>Visualize your learning journey with progress bars and learning statistics on your personal dashboard.</p>
             </div>
         </div>
-        <!-- About End -->
+    </div>
+</section>
 
-
-        <!-- Categories Start -->
-        <div class="container-xxl py-5 category">
-            <div class="container">
-                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <h6 class="section-title bg-white text-center text-primary px-3">Categories</h6>
-                    <h1 class="mb-5">Courses Categories</h1>
-                </div>
-                <div class="row g-3">
-                    <div class="col-lg-7 col-md-6">
-                        <div class="row g-3">
-                            <div class="col-lg-12 col-md-12 wow zoomIn" data-wow-delay="0.1s">
-                                <a class="position-relative d-block overflow-hidden" href="">
-                                    <img class="img-fluid" src="{% static 'images/pics/web design.jpg' %}" alt="">
-                                    <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
-                                        style="margin: 1px;">
-                                        <h5 class="m-0">Web Design</h5>
-                                        <small class="text-primary">8 Courses</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.3s">
-                                <a class="position-relative d-block overflow-hidden" href="">
-                                    <img class="img-fluid" src="{% static 'images/pics/graphic design.jpg' %}" alt="">
-                                    <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
-                                        style="margin: 1px;">
-                                        <h5 class="m-0">Graphic Design</h5>
-                                        <small class="text-primary">20 Courses</small>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.5s">
-                                <a class="position-relative d-block overflow-hidden" href="">
-                                    <img class="img-fluid" src="{% static 'images/pics/video editting.jpg' %}" alt="">
-                                    <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
-                                        style="margin: 1px;">
-                                        <h5 class="m-0">Video Editing</h5>
-                                        <small class="text-primary">12 Courses</small>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
+<!-- ============ FEATURED COURSES ============ -->
+<section class="courses-section">
+    <div class="container">
+        <div class="text-center mb-5 fade-up">
+            <div class="section-label">Our Courses</div>
+            <h2 class="section-title">Featured Courses</h2>
+            <p class="section-subtitle">Expand your creative and technical skills with courses designed by experts.</p>
+        </div>
+        <div class="grid grid-3 fade-up">
+            {% for course in featured_courses %}
+            <div class="course-card">
+                <div class="course-img-wrap">
+                    <img src="{{ course.image_url }}" alt="{{ course.title }}" loading="lazy">
+                    <div class="course-overlay"></div>
+                    {% if course.difficulty %}
+                    <div class="course-badge-overlay">
+                        <span class="badge badge-green">{{ course.difficulty }}</span>
                     </div>
-                    <div class="col-lg-5 col-md-6 wow zoomIn" data-wow-delay="0.7s" style="min-height: 350px;">
-                        <a class="position-relative d-block h-100 overflow-hidden" href="">
-                            <img class="img-fluid position-absolute w-100 h-100"
-                                src="{% static 'images/pics/online marketing.jpg' %}" alt="" style="object-fit: cover;">
-                            <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
-                                style="margin:  1px;">
-                                <h5 class="m-0">Online Marketing</h5>
-                                <small class="text-primary">7 Courses</small>
-                            </div>
-                        </a>
+                    {% endif %}
+                    <div class="course-actions-overlay">
+                        <a href="{% url 'courses' %}" class="btn btn-white btn-sm" style="flex:1;justify-content:center;">View Course</a>
                     </div>
                 </div>
+                <div class="course-body">
+                    <div class="course-category">{{ course.category.name|default:"General" }}</div>
+                    <h3 class="course-title">{{ course.title }}</h3>
+                    <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:14px;">{{ course.description|truncatewords:18 }}</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-user-tie" style="color:var(--sage);"></i>
+                            {% if course.instructor %}{{ course.instructor.student.fullname }}{% else %}TBA{% endif %}
+                        </span>
+                        <span><i class="fas fa-clock" style="color:var(--sage);"></i> {{ course.duration }}</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Default placeholder courses when DB is empty -->
+            {% for item in "abc" %}
+            <div class="course-card">
+                <div class="course-img-wrap" style="background:var(--gradient-hero);display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-book-open" style="font-size:4rem;color:rgba(255,255,255,0.3);"></i>
+                </div>
+                <div class="course-body">
+                    <div class="course-category">Creative Arts</div>
+                    <h3 class="course-title">{% if forloop.counter == 1 %}Videography & Photography{% elif forloop.counter == 2 %}Graphic Design Mastery{% else %}Web Development{% endif %}</h3>
+                    <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:14px;">Learn professional skills and become industry-ready with expert-led lessons and hands-on projects.</p>
+                    <div class="course-meta">
+                        <span><i class="fas fa-user-tie" style="color:var(--sage);"></i> Expert Instructor</span>
+                        <span><i class="fas fa-clock" style="color:var(--sage);"></i> 6 Hours</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'courses' %}" class="btn btn-primary">Browse All Courses <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- ============ STATISTICS ============ -->
+<section class="stats-section">
+    <div class="container">
+        <div class="grid grid-4">
+            <div class="stat-item fade-up">
+                <div class="stat-number">{{ total_students }}+</div>
+                <div class="stat-label"><i class="fas fa-graduation-cap me-2"></i>Students Enrolled</div>
+            </div>
+            <div class="stat-item fade-up">
+                <div class="stat-number">{{ total_courses }}+</div>
+                <div class="stat-label"><i class="fas fa-book me-2"></i>Courses Available</div>
+            </div>
+            <div class="stat-item fade-up">
+                <div class="stat-number">{{ total_instructors }}+</div>
+                <div class="stat-label"><i class="fas fa-chalkboard-teacher me-2"></i>Expert Instructors</div>
+            </div>
+            <div class="stat-item fade-up">
+                <div class="stat-number">500+</div>
+                <div class="stat-label"><i class="fas fa-certificate me-2"></i>Certificates Issued</div>
             </div>
         </div>
-        <!-- Categories Start -->
+    </div>
+</section>
 
-
-        <!-- Courses Start -->
-        <div class="container-xxl py-5">
-            <div class="container">
-                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <h6 class="section-title bg-white text-center text-primary px-3">Courses</h6>
-                    <h1 class="mb-5">Popular Courses</h1>
+<!-- ============ TESTIMONIALS ============ -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="text-center mb-5 fade-up">
+            <div class="section-label">Testimonials</div>
+            <h2 class="section-title">What Our Students Say</h2>
+            <p class="section-subtitle">Real stories from real learners who transformed their skills on our platform.</p>
+        </div>
+        <div class="grid grid-2 fade-up">
+            {% for review in reviews %}
+            <div class="testimonial-card">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">{{ review.review_text }}</p>
+                <div class="rating-stars">
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= review.rating %}<i class="fas fa-star"></i>{% else %}<i class="far fa-star"></i>{% endif %}
+                    {% endfor %}
                 </div>
-                <div class="row g-4 justify-content-center">
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="course-item bg-light">
-                            <div class="position-relative overflow-hidden">
-                                <img class="img-fluid" src="{% static 'images/pics/web development.jpg' %}" alt="">
-                                <div
-                                    class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                    <a href="{% url 'about' %}"
-                                        class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end"
-                                        style="border-radius: 30px 0 0 30px;">Read More</a>
-                                    <a href="register.html" class="flex-shrink-0 btn btn-sm btn-primary px-3"
-                                        style="border-radius: 0 30px 30px 0;">Join Now</a>
-                                </div>
-                            </div>
-                            <div class="text-center p-4 pb-0">
-                                <h3 class="mb-0">Kshs50,000</h3>
-                                <div class="mb-3">
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small>(123)</small>
-                                </div>
-                                <h5 class="mb-4">Web Design & Development Course for Beginners</h5>
-                            </div>
-                            <div class="d-flex border-top">
-                                <small class="flex-fill text-center border-end py-2"><i
-                                        class="fa fa-user-tie text-primary me-2"></i>KING'S</small>
-                                <small class="flex-fill text-center border-end py-2"><i
-                                        class="fa fa-clock text-primary me-2"></i>2HRS</small>
-                                <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>15
-                                    Students</small>
-                            </div>
-                        </div>
+                <div class="testimonial-author" style="margin-top:12px;">
+                    {% if review.student.student.profile_picture %}
+                    <img src="{{ review.student.student.profile_picture.url }}" alt="{{ review.student.student.fullname }}" class="testimonial-avatar">
+                    {% else %}
+                    <div style="width:44px;height:44px;border-radius:50%;background:var(--gradient-hero);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:1rem;border:2px solid var(--mint);">
+                        {{ review.student.student.fullname|first|upper }}
                     </div>
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                        <div class="course-item bg-light">
-                            <div class="position-relative overflow-hidden">
-                                <img class="img-fluid" src="{% static 'images/pics/graphic design.jpg' %}" alt="">
-                                <div
-                                    class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                    <a href="{% url 'about' %}"
-                                        class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end"
-                                        style="border-radius: 30px 0 0 30px;">Read More</a>
-                                    <a href="register.html" class="flex-shrink-0 btn btn-sm btn-primary px-3"
-                                        style="border-radius: 0 30px 30px 0;">Join Now</a>
-                                </div>
-                            </div>
-                            <div class="text-center p-4 pb-0">
-                                <h3 class="mb-0">Kshs 25,000</h3>
-                                <div class="mb-3">
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small>(123)</small>
-                                </div>
-                                <h5 class="mb-4">Graphic Design for Beginners</h5>
-                            </div>
-                            <div class="d-flex border-top">
-                                <small class="flex-fill text-center border-end py-2"><i
-                                        class="fa fa-user-tie text-primary me-2"></i>SPECTRE</small>
-                                <small class="flex-fill text-center border-end py-2"><i
-                                        class="fa fa-clock text-primary me-2"></i>1 HRS</small>
-                                <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>12
-                                    Students</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                        <div class="course-item bg-light">
-                            <div class="position-relative overflow-hidden">
-                                <img class="img-fluid" src="{% static 'images/pics/video editting.jpg' %}" alt="">
-                                <div
-                                    class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                    <a href="{% url 'about' %}"
-                                        class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end"
-                                        style="border-radius: 30px 0 0 30px;">Read More</a>
-                                    <a href="register.html" class="flex-shrink-0 btn btn-sm btn-primary px-3"
-                                        style="border-radius: 0 30px 30px 0;">Join Now</a>
-                                </div>
-                            </div>
-                            <div class="text-center p-4 pb-0">
-                                <h3 class="mb-0">Kshs 32,500</h3>
-                                <div class="mb-3">
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small class="fa fa-star text-primary"></small>
-                                    <small>(123)</small>
-                                </div>
-                                <h5 class="mb-4">Video Editing for Beginners</h5>
-                            </div>
-                            <div class="d-flex border-top">
-                                <small class="flex-fill text-center border-end py-2"><i
-                                        class="fa fa-user-tie text-primary me-2"></i>STAR MARK</small>
-                                <small class="flex-fill text-center border-end py-2"><i
-                                        class="fa fa-clock text-primary me-2"></i>1.5 HRS</small>
-                                <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>17
-                                    Students</small>
-                            </div>
-                        </div>
+                    {% endif %}
+                    <div>
+                        <div class="testimonial-name">{{ review.student.student.fullname }}</div>
+                        <div class="testimonial-role">{{ review.course.title }}</div>
                     </div>
                 </div>
+            </div>
+            {% empty %}
+            <!-- Default testimonials when DB is empty -->
+            {% for t in "abcd" %}
+            <div class="testimonial-card">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">{% if forloop.counter == 1 %}The graphic design and video editing courses helped me create better teaching materials and grow my online presence. The platform made learning simple and the assignments pushed me to improve.{% elif forloop.counter == 2 %}The online marketing and video editing classes were eye-opening. They taught me how to communicate more effectively and present my ideas clearly.{% elif forloop.counter == 3 %}Taking the web design and online marketing classes completely changed how I approach digital projects. The lessons were practical and easy to follow.{% else %}These courses gave me a stronger understanding of how to manage creative teams. Learning web and graphic design helped me communicate better with designers.{% endif %}</p>
+                <div class="rating-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <div class="testimonial-author" style="margin-top:12px;">
+                    <img src="{% static 'images/pics/'%}{% if forloop.counter == 1 %}madam pj.jpg{% elif forloop.counter == 2 %}bwana sg.jpg{% elif forloop.counter == 3 %}comp m.jpg{% else %}fmm.jpg{% endif %}" alt="Student" class="testimonial-avatar">
+                    <div>
+                        <div class="testimonial-name">{% if forloop.counter == 1 %}Madam PJ{% elif forloop.counter == 2 %}Bwana SG{% elif forloop.counter == 3 %}Computer Morris{% else %}F.M.M{% endif %}</div>
+                        <div class="testimonial-role">{% if forloop.counter == 1 %}Online Tutor{% elif forloop.counter == 2 %}Politician{% elif forloop.counter == 3 %}Computer Analyst{% else %}Project Manager{% endif %}</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ============ FAQ SECTION ============ -->
+<section class="faq-section">
+    <div class="container">
+        <div class="text-center mb-5 fade-up">
+            <div class="section-label">FAQ</div>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+        <div style="max-width:750px;margin:0 auto;" class="fade-up">
+            <div class="faq-item">
+                <div class="faq-question">Who can join this platform? <i class="fas fa-plus faq-icon"></i></div>
+                <div class="faq-answer">The platform is open to all Karatina University students and members of the Nature Club. You can register as a Student to enroll in courses, or apply as an Instructor subject to administrator approval.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Are the courses free to access? <i class="fas fa-plus faq-icon"></i></div>
+                <div class="faq-answer">Yes! All courses on this platform are free for registered members of the Karatina University Nature Club. Simply register and start learning immediately.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">How do I earn a certificate? <i class="fas fa-plus faq-icon"></i></div>
+                <div class="faq-answer">Complete all lessons in a course and meet the required completion criteria. The system will automatically generate a professional PDF certificate with a QR code for verification once you reach 100% progress.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">How can I become an instructor? <i class="fas fa-plus faq-icon"></i></div>
+                <div class="faq-answer">Register for an account and select the "Instructor" role. Your application will be reviewed by the administrator. Once approved, you can create courses, upload materials, grade assignments, and host live classes.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">How do live classes work? <i class="fas fa-plus faq-icon"></i></div>
+                <div class="faq-answer">Instructors add meeting links (Google Meet, Zoom, or Microsoft Teams) to their course. Students simply click "Join Class" at the scheduled time to join the session directly from their dashboard.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Can I download course materials? <i class="fas fa-plus faq-icon"></i></div>
+                <div class="faq-answer">Yes! Instructors upload PDF files, presentations, images, and other resources which you can download anytime from the course portal for offline study.</div>
             </div>
         </div>
-        <!-- Courses End -->
+    </div>
+</section>
 
-
-        <!-- Team Start -->
-        <div class="container-xxl py-5">
-            <div class="container">
-                <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                    <h6 class="section-title bg-white text-center text-primary px-3">Instructors</h6>
-                    <h1 class="mb-5">Expert Instructors</h1>
-                </div>
-                <div class="row g-4">
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="team-item bg-light">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid" src="{% static 'images/pics/KEN IN.jpg' %}" alt="">
-                            </div>
-                            <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                                <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-instagram"></i></a>
-                                </div>
-                            </div>
-                            <div class="text-center p-4">
-                                <h5 class="mb-0">Spectre</h5>
-                                <small>Graphic Design</small>
-                            </div>
+<!-- ============ CONTACT SECTION ============ -->
+<section class="contact-section">
+    <div class="container">
+        <div class="text-center mb-5 fade-up">
+            <div class="section-label">Contact Us</div>
+            <h2 class="section-title">Get in Touch</h2>
+            <p class="section-subtitle">Have questions or need support? Reach out to the Nature Club team.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;" class="fade-up">
+            <!-- Contact Info -->
+            <div>
+                <div style="display:flex;flex-direction:column;gap:24px;">
+                    <div style="display:flex;align-items:flex-start;gap:16px;">
+                        <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--forest),var(--sage));display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;"><i class="fas fa-map-marker-alt"></i></div>
+                        <div>
+                            <h4 style="font-weight:700;margin-bottom:4px;">Location</h4>
+                            <p style="color:var(--text-muted);font-size:0.9rem;">Karatina University, Karatina Town,<br>Nyeri County, Kenya</p>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                        <div class="team-item bg-light">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid" src="{% static 'images/pics/KINGS IN.jpg' %}" alt="">
-                            </div>
-                            <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                                <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-instagram"></i></a>
-                                </div>
-                            </div>
-                            <div class="text-center p-4">
-                                <h5 class="mb-0">KING'S</h5>
-                                <small>Web Design and Development</small>
-                            </div>
+                    <div style="display:flex;align-items:flex-start;gap:16px;">
+                        <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--forest),var(--sage));display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <h4 style="font-weight:700;margin-bottom:4px;">Email</h4>
+                            <p style="color:var(--text-muted);font-size:0.9rem;">karunatureclub@karu.ac.ke</p>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                        <div class="team-item bg-light">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid" src="{% static 'images/pics/KAJUNIOUR IN (2).jpg' %}" alt="">
-                            </div>
-                            <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                                <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-instagram"></i></a>
-                                </div>
-                            </div>
-                            <div class="text-center p-4">
-                                <h5 class="mb-0">KAYJAY</h5>
-                                <small>Online Marketing</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                        <div class="team-item bg-light">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid" src="{% static 'images/pics/STAR  IN.jpg' %}" alt="">
-                            </div>
-                            <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                                <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href=""><i
-                                            class="fab fa-instagram"></i></a>
-                                </div>
-                            </div>
-                            <div class="text-center p-4">
-                                <h5 class="mb-0">STAR MARK</h5>
-                                <small>Video Editing</small>
-                            </div>
+                    <div style="display:flex;align-items:flex-start;gap:16px;">
+                        <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--forest),var(--sage));display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;"><i class="fas fa-phone"></i></div>
+                        <div>
+                            <h4 style="font-weight:700;margin-bottom:4px;">Phone</h4>
+                            <p style="color:var(--text-muted);font-size:0.9rem;">+254 700 000 000</p>
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- Contact Form -->
+            <div class="card" style="padding:32px;">
+                <form method="post" action="{% url 'contact' %}">
+                    {% csrf_token %}
+                    <div class="grid grid-2" style="gap:16px;">
+                        <div class="form-group"><label class="form-label">Your Name</label><input type="text" class="form-control" name="name" required placeholder="John Doe"></div>
+                        <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-control" name="email" required placeholder="john@email.com"></div>
+                    </div>
+                    <div class="form-group"><label class="form-label">Subject</label><input type="text" class="form-control" name="subject" required placeholder="How can we help?"></div>
+                    <div class="form-group"><label class="form-label">Message</label><textarea class="form-control" name="message" required placeholder="Your message here..."></textarea></div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">Send Message <i class="fas fa-paper-plane"></i></button>
+                </form>
             </div>
         </div>
-        <!-- Team End -->
+    </div>
+</section>
 
+{% endblock %}
 
-        <!-- Testimonial Start -->
-        <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
-            <div class="container">
-                <div class="text-center">
-                    <h6 class="section-title bg-white text-center text-primary px-3">Testimonial</h6>
-                    <h1 class="mb-5">Our Students Say!</h1>
+<!-- ======================== FOOTER ======================== -->
+<footer class="footer">
+    <div class="container">
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;flex-wrap:wrap;">
+            <div class="footer-brand">
+                <img src="{% static 'images/pics/logo.png' %}" alt="Logo">
+                <p>The official online learning platform of the Karatina University Nature Club — empowering members with creative and technical skills while conserving nature.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="social-link" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                 </div>
-                <div class="owl-carousel testimonial-carousel position-relative">
-                    <div class="testimonial-item text-center">
-                        <img class="border rounded-circle p-2 mx-auto mb-3"
-                            src="{% static 'images/pics/madam pj.jpg' %}" style="width: 80px; height: 80px;">
-                        <h5 class="mb-0">Madam PJ</h5>
-                        <p>Online Tutor</p>
-                        <div class="testimonial-text bg-light text-center p-4">
-                            <p class="mb-0">The graphic design and video editing courses helped me create better
-                                teaching materials and grow my online presence. The platform made learning
-                                simple, and
-                                the assignments pushed me to improve. I now attract more students because of the
-                                skills
-                                I gained.</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-item text-center">
-                        <img class="border rounded-circle p-2 mx-auto mb-3"
-                            src="{% static 'images/pics/bwana sg.jpg' %}" style="width: 80px; height: 80px;">
-                        <h5 class="mb-0">Bwana SG</h5>
-                        <p>Politician</p>
-                        <div class="testimonial-text bg-light text-center p-4">
-                            <p class="mb-0">The online marketing and video editing classes were eye-opening.
-                                They taught
-                                me how to communicate more effectively with the public and present my ideas
-                                clearly. The
-                                skills I gained have helped me build a stronger connection with my audience.</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-item text-center">
-                        <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'images/pics/comp m.jpg' %}"
-                            style="width: 80px; height: 80px;">
-                        <h5 class="mb-0">Computer Morris</h5>
-                        <p>Computer Analyst</p>
-                        <div class="testimonial-text bg-light text-center p-4">
-                            <p class="mb-0">Taking the web design and online marketing classes completely
-                                changed how I
-                                approach digital projects. The lessons were practical, easy to follow, and
-                                helped me
-                                sharpen my problem-solving skills. I use what I learned every day in my work as
-                                a
-                                computer analyst.</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-item text-center">
-                        <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'images/pics/fmm.jpg' %}"
-                            style="width: 80px; height: 80px;">
-                        <h5 class="mb-0">F.M.M</h5>
-                        <p>Project Manager</p>
-                        <div class="testimonial-text bg-light text-center p-4">
-                            <p class="mb-0">These courses gave me a stronger understanding of how to manage
-                                creative
-                                teams. Learning web and graphic design helped me communicate better with
-                                designers and
-                                developers. It’s one of the best investments I’ve made in my professional
-                                growth.</p>
-                        </div>
-                    </div>
-                </div>
+            </div>
+            <div>
+                <p class="footer-title">Quick Links</p>
+                <ul class="footer-links">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'about' %}">About Us</a></li>
+                    <li><a href="{% url 'courses' %}">Courses</a></li>
+                    <li><a href="{% url 'team' %}">Our Team</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-title">Courses</p>
+                <ul class="footer-links">
+                    <li><a href="{% url 'courses' %}">Videography</a></li>
+                    <li><a href="{% url 'courses' %}">Photography</a></li>
+                    <li><a href="{% url 'courses' %}">Graphic Design</a></li>
+                    <li><a href="{% url 'courses' %}">Web Design</a></li>
+                    <li><a href="{% url 'courses' %}">Web Development</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer-title">Support</p>
+                <ul class="footer-links">
+                    <li><a href="{% url 'register' %}">Register</a></li>
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'verify_certificate_search' %}">Verify Certificate</a></li>
+                    <li><a href="{% url 'testimonial' %}">Testimonials</a></li>
+                </ul>
             </div>
         </div>
-        <!-- Testimonial End -->
-
-
-        {% endblock %}
-        <!-- Footer Start -->
-        <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-            <div class="container py-5">
-                <div class="row g-5">
-                    <div class="col-lg-3 col-md-6">
-                        <h4 class="text-white mb-3">Quick Link</h4>
-                        <a class="btn btn-link" href="{% url 'about' %}">About Us</a>
-                        <a class="btn btn-link" href="{% url 'contact' %}">Contact Us</a>
-                        <a class="btn btn-link" href="{% url 'about' %}">Privacy Policy</a>
-                        <a class="btn btn-link" href="{% url 'about' %}">Terms & Condition</a>
-                        <a class="btn btn-link" href="{% url 'about' %}">FAQs & Help</a>
-                        <a class="btn btn-link" href="{% url 'login' %}">Admin Login</a>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h4 class="text-white mb-3">Contact</h4>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1957-10101 Karatina, Nyeri</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+254758223340</p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>kndtechsolutions@gmail.com</p>
-                        <div class="d-flex pt-2">
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h4 class="text-white mb-3">Gallery</h4>
-                        <div class="row g-2 pt-2">
-                            <div class="col-4">
-                                <img class="img-fluid bg-light p-1" src="{% static 'images/pics/graphic design.jpg' %}"
-                                    alt="">
-                            </div>
-                            <div class="col-4">
-                                <img class="img-fluid bg-light p-1"
-                                    src="{% static 'images/pics/online marketing.jpg' %}" alt="">
-                            </div>
-                            <div class="col-4">
-                                <img class="img-fluid bg-light p-1" src="{% static 'images/pics/video editting.jpg' %}"
-                                    alt="">
-                            </div>
-                            <div class="col-4">
-                                <img class="img-fluid bg-light p-1" src="{% static 'images/pics/web development.jpg' %}"
-                                    alt="">
-                            </div>
-                            <div class="col-4">
-                                <img class="img-fluid bg-light p-1" src="{% static 'images/pics/web design.jpg' %}"
-                                    alt="">
-                            </div>
-                            <div class="col-4">
-                                <img class="img-fluid bg-light p-1" src="{% static 'images/pics/carousel 1.jpg' %}"
-                                    alt="">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h4 class="text-white mb-3">Newsletter</h4>
-                        <p>Subscribe to our monthly newsletter for new course releases, learning tips, free
-                            resources
-                            and platform updates. Be the first to know what’s coming next and keep growing your
-                            digital
-                            skills.</p>
-                        <div class="position-relative mx-auto" style="max-width: 400px;">
-                            <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text"
-                                placeholder="Your email">
-                            <button type="button"
-                                class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="copyright">
-                    <div class="row">
-                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                            &copy; <a class="border-bottom" href="www.karunatureclub.com">Karatina University
-                                Nature
-                                Club</a>, All Right Reserved.
-
-                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                            <!--                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a><br><br>-->
-                            <!--                        Distributed By <a class="border-bottom" href="https://themewagon.com">ThemeWagon</a>-->
-                        </div>
-                        <div class="col-md-6 text-center text-md-end">
-                            <div class="footer-menu">
-                                <a href="{% url 'home' %}">Home</a>
-                                <a href="{% url 'about' %}">Cookies</a>
-                                <a href="{% url 'about' %}">Help</a>
-                                <a href="{% url 'about' %}">FQAs</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Karatina University Nature Club LMS. All rights reserved.</p>
+            <p>🌿 Conserving Nature Through Education</p>
         </div>
-        <!-- Footer End -->
+    </div>
+</footer>
 
+<!-- ======================== SCRIPTS ======================== -->
+<script>
+    // Page Loader
+    window.addEventListener('load', () => {
+        const loader = document.getElementById('pageLoader');
+        if (loader) { setTimeout(() => loader.classList.add('hidden'), 600); }
+    });
 
-        <!-- Back to Top -->
-        <a href="{% url 'home' %}" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i
-                class="bi bi-arrow-up"></i></a>
+    // Dark Mode Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    if (savedTheme === 'dark') { themeIcon.classList.replace('fa-moon', 'fa-sun'); }
 
+    themeToggle.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        themeIcon.classList.toggle('fa-moon', next === 'light');
+        themeIcon.classList.toggle('fa-sun', next === 'dark');
+    });
 
-        <!-- JavaScript Libraries -->
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="{% static 'lib/wow/wow.min.js' %}"></script>
-        <script src="{% static 'lib/easing/easing.min.js' %}"></script>
-        <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
-        <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    // Hamburger Menu
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('navMenu');
+    hamburger.addEventListener('click', () => navMenu.classList.toggle('open'));
 
-        <!-- Template Javascript -->
-        <script src="{% static 'js/main.js' %}"></script>
+    // Navbar scroll shadow
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('mainNavbar');
+        if (window.scrollY > 20) { nav.style.boxShadow = '0 4px 30px rgba(0,0,0,0.12)'; }
+        else { nav.style.boxShadow = 'none'; }
+    });
+
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            const item = q.closest('.faq-item');
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        });
+    });
+
+    // Scroll fade-up animations
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+
+    // Auto-dismiss toasts
+    setTimeout(() => {
+        const tc = document.getElementById('toastContainer');
+        if (tc) { tc.style.opacity = '0'; tc.style.transition = 'opacity 0.5s'; setTimeout(() => tc.remove(), 500); }
+    }, 5000);
+</script>
+{% block extra_js %}{% endblock %}
 </body>
-
 </html>

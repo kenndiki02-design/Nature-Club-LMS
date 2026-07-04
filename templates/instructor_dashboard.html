@@ -1,0 +1,139 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}Instructor Dashboard – Karatina University Nature Club LMS{% endblock %}
+
+{% block content %}
+<section class="page-hero" style="padding:80px 0 40px;">
+    <h1>Instructor Dashboard</h1>
+    <div class="breadcrumb"><a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span><span>Instructor Dashboard</span></div>
+</section>
+
+<section style="padding:40px 0 80px;background:var(--cream);">
+    <div class="container">
+
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:32px;">
+            <div class="card" style="padding:20px;text-align:center;border-left:4px solid var(--forest);">
+                <div style="font-size:2rem;font-weight:800;color:var(--forest);font-family:'Playfair Display',serif;">{{ courses|length }}</div>
+                <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-book" style="color:var(--sage);"></i> Your Courses</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;border-left:4px solid var(--sage);">
+                <div style="font-size:2rem;font-weight:800;color:var(--forest);font-family:'Playfair Display',serif;">{{ total_students }}</div>
+                <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-users" style="color:var(--sage);"></i> Total Students</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;border-left:4px solid #f59e0b;">
+                <div style="font-size:2rem;font-weight:800;color:var(--forest);font-family:'Playfair Display',serif;">{{ pending_submissions|length }}</div>
+                <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-pen" style="color:#f59e0b;"></i> Pending Grading</div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:24px;align-items:start;">
+            <div>
+                <!-- Create Course Card -->
+                <div class="card" style="padding:28px;margin-bottom:24px;">
+                    <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);">
+                        <i class="fas fa-plus-circle" style="color:var(--sage);"></i> Create New Course
+                    </h3>
+                    <form method="post" action="{% url 'instructor_add_course' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                            <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Course Title</label><input type="text" class="form-control" name="title" required placeholder="e.g. Videography for Beginners"></div>
+                            <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Description</label><textarea class="form-control" name="description" required placeholder="Brief overview..." style="min-height:80px;"></textarea></div>
+                            <div class="form-group"><label class="form-label">Price</label><input type="text" class="form-control" name="price" value="Free" placeholder="Free or Ksh 1000"></div>
+                            <div class="form-group"><label class="form-label">Duration</label><input type="text" class="form-control" name="duration" required placeholder="e.g. 6 Hours"></div>
+                            <div class="form-group">
+                                <label class="form-label">Difficulty</label>
+                                <select class="form-control" name="difficulty">
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category</label>
+                                <select class="form-control" name="category">
+                                    <option value="">-- Select Category --</option>
+                                    {% for cat in categories %}<option value="{{ cat.id }}">{{ cat.name }}</option>{% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Course Thumbnail</label><input type="file" class="form-control" name="image" accept="image/*"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create Course</button>
+                    </form>
+                </div>
+
+                <!-- My Courses -->
+                <div class="card" style="padding:28px;">
+                    <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);">
+                        <i class="fas fa-book" style="color:var(--sage);"></i> My Courses
+                    </h3>
+                    {% if courses %}
+                    <div style="display:flex;flex-direction:column;gap:16px;">
+                        {% for course in courses %}
+                        <div style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px;display:flex;align-items:center;gap:16px;">
+                            <img src="{{ course.image_url }}" alt="{{ course.title }}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+                            <div style="flex:1;">
+                                <div style="font-weight:700;font-size:0.92rem;color:var(--text);">{{ course.title }}</div>
+                                <div style="font-size:0.78rem;color:var(--text-muted);">
+                                    {{ course.lessons.count }} lessons · {{ course.students_enrolled.count }} students
+                                    {% if course.is_archived %}<span class="badge badge-orange" style="margin-left:8px;">Archived</span>{% endif %}
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:8px;">
+                                <a href="{% url 'course_detail' course.id %}" class="btn btn-outline btn-sm"><i class="fas fa-eye"></i> Manage</a>
+                                {% if not course.is_archived %}
+                                <form method="post" action="{% url 'instructor_archive_course' course.id %}" style="display:inline;">{% csrf_token %}<button type="submit" class="btn btn-sm" style="background:#f8d7da;color:#721c24;border:none;"><i class="fas fa-archive"></i></button></form>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p style="color:var(--text-muted);text-align:center;padding:30px 0;">No courses yet. Create your first course above!</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div style="display:flex;flex-direction:column;gap:20px;">
+                <!-- Pending Grading -->
+                <div class="card" style="padding:24px;">
+                    <h4 style="font-weight:700;font-size:0.95rem;color:var(--forest);margin-bottom:16px;"><i class="fas fa-pen" style="color:var(--sage);"></i> Pending Grading</h4>
+                    {% if pending_submissions %}
+                    {% for sub in pending_submissions %}
+                    <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+                        <div style="font-weight:600;font-size:0.85rem;color:var(--text);">{{ sub.student.student.fullname }}</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);">{{ sub.assignment.title }}</div>
+                        <form method="post" action="{% url 'instructor_grade_submission' sub.id %}" style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                            {% csrf_token %}
+                            <input type="number" name="marks_obtained" class="form-control" placeholder="Marks ({{ sub.assignment.max_marks }} max)" min="0" max="{{ sub.assignment.max_marks }}" required style="grid-column:1/-1;">
+                            <textarea name="feedback" class="form-control" placeholder="Feedback..." rows="2" style="grid-column:1/-1;"></textarea>
+                            <button type="submit" class="btn btn-success btn-sm" style="grid-column:1/-1;justify-content:center;"><i class="fas fa-check"></i> Grade</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p style="font-size:0.85rem;color:var(--text-muted);text-align:center;padding:20px 0;">No pending submissions.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Notifications -->
+                <div class="card" style="padding:24px;">
+                    <h4 style="font-weight:700;font-size:0.95rem;color:var(--forest);margin-bottom:16px;"><i class="fas fa-bell" style="color:var(--sage);"></i> Notifications</h4>
+                    {% if notifications %}
+                    {% for notif in notifications %}
+                    <div style="font-size:0.82rem;color:var(--text-muted);padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;">
+                        <i class="fas fa-circle" style="font-size:0.4rem;color:var(--sage);margin-top:6px;flex-shrink:0;"></i>{{ notif.message }}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p style="font-size:0.85rem;color:var(--text-muted);text-align:center;padding:20px 0;">No notifications.</p>
+                    {% endif %}
+                </div>
+
+                <a href="{% url 'logout' %}" class="btn btn-danger" style="justify-content:center;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,59 +1,253 @@
 {% extends 'index.html' %}
 {% load static %}
+{% block title %}Admin Dashboard – Karatina University Nature Club LMS{% endblock %}
 
 {% block content %}
-<div class="container-xxl py-5">
+<section class="page-hero" style="padding:80px 0 40px;">
+    <h1>Administrator Dashboard</h1>
+    <div class="breadcrumb"><a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span><span>Admin Dashboard</span></div>
+</section>
+
+<section style="padding:40px 0 80px;background:var(--cream);">
     <div class="container">
-        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="section-title bg-white text-center text-primary px-3">Dashboard</h6>
-            <h1 class="mb-5">Admin Dashboard</h1>
+
+        <!-- Analytics Cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:32px;">
+            {% for item in admin_cards %}{% endfor %}
+            <div class="card" style="padding:20px;text-align:center;border-top:4px solid var(--forest);">
+                <div style="font-size:2rem;font-weight:800;color:var(--forest);font-family:'Playfair Display',serif;">{{ total_students }}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-graduation-cap" style="color:var(--sage);"></i> Students</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;border-top:4px solid var(--sage);">
+                <div style="font-size:2rem;font-weight:800;color:var(--forest);font-family:'Playfair Display',serif;">{{ total_instructors }}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-chalkboard-teacher" style="color:var(--sage);"></i> Instructors</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;border-top:4px solid #f59e0b;">
+                <div style="font-size:2rem;font-weight:800;color:#d97706;font-family:'Playfair Display',serif;">{{ total_pending }}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-clock" style="color:#f59e0b;"></i> Pending Approval</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;border-top:4px solid #3b82f6;">
+                <div style="font-size:2rem;font-weight:800;color:#1d4ed8;font-family:'Playfair Display',serif;">{{ total_courses }}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-book" style="color:#3b82f6;"></i> Active Courses</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;border-top:4px solid #dc3545;">
+                <div style="font-size:2rem;font-weight:800;color:#dc3545;font-family:'Playfair Display',serif;">{{ total_submissions }}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-tasks" style="color:#dc3545;"></i> Submissions</div>
+            </div>
+            <div class="card" style="padding:20px;text-align:center;border-top:4px solid var(--earth);">
+                <div style="font-size:2rem;font-weight:800;color:var(--earth);font-family:'Playfair Display',serif;">{{ total_certificates }}</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-certificate" style="color:var(--earth);"></i> Certificates</div>
+            </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-10 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="bg-light p-5 rounded">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3 class="mb-0">Enrolled Students</h3>
-                        <a href="{% url 'logout' %}" class="btn btn-danger py-2 px-4">Logout</a>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover bg-white">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Full Name</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col">Enrolled Courses</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for student in students %}
-                                <tr>
-                                    <th scope="row">{{ forloop.counter }}</th>
-                                    <td>{{ student.fullname }}</td>
-                                    <td>{{ student.email }}</td>
-                                    <td>
-                                        {% if student.is_admin %}
-                                        <span class="badge bg-danger">Admin</span>
+
+        <!-- Tab Navigation -->
+        <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="showTab('approvals')" id="tab-approvals">⏳ Pending Approvals ({{ total_pending }})</button>
+            <button class="btn btn-outline btn-sm" onclick="showTab('students')" id="tab-students">🎓 Students</button>
+            <button class="btn btn-outline btn-sm" onclick="showTab('instructors')" id="tab-instructors">👩‍🏫 Instructors</button>
+            <button class="btn btn-outline btn-sm" onclick="showTab('courses')" id="tab-courses">📚 Courses</button>
+            <button class="btn btn-outline btn-sm" onclick="showTab('announce')" id="tab-announce">📢 Announcements</button>
+        </div>
+
+        <!-- Pending Approvals -->
+        <div id="panel-approvals" class="admin-panel">
+            <div class="card" style="padding:28px;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);">
+                    <i class="fas fa-user-check" style="color:var(--sage);"></i> Pending Instructor Approvals
+                </h3>
+                {% if pending_approvals %}
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:var(--forest);color:white;text-align:left;">
+                                <th style="padding:12px 16px;font-size:0.82rem;font-weight:600;border-radius:8px 0 0 8px;">#</th>
+                                <th style="padding:12px 16px;font-size:0.82rem;font-weight:600;">Name</th>
+                                <th style="padding:12px 16px;font-size:0.82rem;font-weight:600;">Email</th>
+                                <th style="padding:12px 16px;font-size:0.82rem;font-weight:600;">Status</th>
+                                <th style="padding:12px 16px;font-size:0.82rem;font-weight:600;border-radius:0 8px 8px 0;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for profile in pending_approvals %}
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:12px 16px;font-size:0.88rem;color:var(--text-muted);">{{ forloop.counter }}</td>
+                                <td style="padding:12px 16px;font-weight:600;font-size:0.9rem;">{{ profile.fullname }}</td>
+                                <td style="padding:12px 16px;font-size:0.88rem;color:var(--text-muted);">{{ profile.email }}</td>
+                                <td style="padding:12px 16px;"><span class="badge badge-orange">Pending</span></td>
+                                <td style="padding:12px 16px;">
+                                    <div style="display:flex;gap:8px;">
+                                        <form method="post" action="{% url 'admin_approve_instructor' profile.id %}">{% csrf_token %}<button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Approve</button></form>
+                                        <form method="post" action="{% url 'admin_reject_instructor' profile.id %}">{% csrf_token %}<button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-times"></i> Reject</button></form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p style="color:var(--text-muted);text-align:center;padding:40px 0;"><i class="fas fa-check-circle" style="font-size:2rem;color:var(--mint);display:block;margin-bottom:12px;"></i>No pending instructor approvals.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Students Panel -->
+        <div id="panel-students" class="admin-panel" style="display:none;">
+            <div class="card" style="padding:28px;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);">
+                    <i class="fas fa-graduation-cap" style="color:var(--sage);"></i> All Students
+                </h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead><tr style="background:var(--forest);color:white;text-align:left;">
+                            <th style="padding:12px 16px;font-size:0.82rem;">#</th><th style="padding:12px 16px;font-size:0.82rem;">Name</th><th style="padding:12px 16px;font-size:0.82rem;">Email</th>
+                            <th style="padding:12px 16px;font-size:0.82rem;">Status</th><th style="padding:12px 16px;font-size:0.82rem;">Courses</th><th style="padding:12px 16px;font-size:0.82rem;">Actions</th>
+                        </tr></thead>
+                        <tbody>
+                            {% for s in students %}
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:12px 16px;color:var(--text-muted);font-size:0.88rem;">{{ forloop.counter }}</td>
+                                <td style="padding:12px 16px;font-weight:600;font-size:0.9rem;">{{ s.fullname }}</td>
+                                <td style="padding:12px 16px;font-size:0.88rem;color:var(--text-muted);">{{ s.email }}</td>
+                                <td style="padding:12px 16px;">
+                                    {% if s.status == 'active' %}<span class="badge badge-green">Active</span>{% elif s.status == 'suspended' %}<span class="badge badge-red">Suspended</span>{% endif %}
+                                </td>
+                                <td style="padding:12px 16px;font-size:0.88rem;">{{ s.enrolled_courses.count }}</td>
+                                <td style="padding:12px 16px;">
+                                    <div style="display:flex;gap:6px;">
+                                        {% if s.status == 'active' %}
+                                        <form method="post" action="{% url 'admin_suspend_user' s.id %}">{% csrf_token %}<button type="submit" class="btn btn-sm" style="background:#fef3c7;color:#92400e;border:none;" title="Suspend"><i class="fas fa-pause"></i></button></form>
                                         {% else %}
-                                        <span class="badge bg-success">Student</span>
+                                        <form method="post" action="{% url 'admin_unsuspend_user' s.id %}">{% csrf_token %}<button type="submit" class="btn btn-success btn-sm" title="Activate"><i class="fas fa-play"></i></button></form>
                                         {% endif %}
-                                    </td>
-                                    <td>
-                                        {% for course in student.enrolled_courses.all %}
-                                        <span class="badge bg-info text-dark">{{ course.title }}</span><br>
-                                        {% empty %}
-                                        <span class="text-muted">None</span>
-                                        {% endfor %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                        <form method="post" action="{% url 'admin_delete_user' s.id %}" onsubmit="return confirm('Delete this student? This cannot be undone.')">{% csrf_token %}<button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">No students registered yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+
+        <!-- Instructors Panel -->
+        <div id="panel-instructors" class="admin-panel" style="display:none;">
+            <div class="card" style="padding:28px;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);">
+                    <i class="fas fa-chalkboard-teacher" style="color:var(--sage);"></i> All Instructors
+                </h3>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead><tr style="background:var(--forest);color:white;text-align:left;">
+                            <th style="padding:12px 16px;font-size:0.82rem;">#</th><th style="padding:12px 16px;font-size:0.82rem;">Name</th><th style="padding:12px 16px;font-size:0.82rem;">Email</th>
+                            <th style="padding:12px 16px;font-size:0.82rem;">Status</th><th style="padding:12px 16px;font-size:0.82rem;">Actions</th>
+                        </tr></thead>
+                        <tbody>
+                            {% for ins in instructors %}
+                            <tr style="border-bottom:1px solid var(--border);">
+                                <td style="padding:12px 16px;color:var(--text-muted);">{{ forloop.counter }}</td>
+                                <td style="padding:12px 16px;font-weight:600;font-size:0.9rem;">{{ ins.fullname }}</td>
+                                <td style="padding:12px 16px;font-size:0.88rem;color:var(--text-muted);">{{ ins.email }}</td>
+                                <td style="padding:12px 16px;">
+                                    {% if ins.status == 'active' %}<span class="badge badge-green">Active</span>
+                                    {% elif ins.status == 'pending_approval' %}<span class="badge badge-orange">Pending</span>
+                                    {% else %}<span class="badge badge-red">Suspended</span>{% endif %}
+                                </td>
+                                <td style="padding:12px 16px;">
+                                    <div style="display:flex;gap:6px;">
+                                        {% if ins.status == 'pending_approval' %}
+                                        <form method="post" action="{% url 'admin_approve_instructor' ins.id %}">{% csrf_token %}<button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Approve</button></form>
+                                        {% endif %}
+                                        {% if ins.status == 'active' %}
+                                        <form method="post" action="{% url 'admin_suspend_user' ins.id %}">{% csrf_token %}<button type="submit" class="btn btn-sm" style="background:#fef3c7;color:#92400e;border:none;"><i class="fas fa-pause"></i></button></form>
+                                        {% else %}
+                                        <form method="post" action="{% url 'admin_unsuspend_user' ins.id %}">{% csrf_token %}<button type="submit" class="btn btn-success btn-sm"><i class="fas fa-play"></i></button></form>
+                                        {% endif %}
+                                        <form method="post" action="{% url 'admin_delete_user' ins.id %}" onsubmit="return confirm('Delete this instructor?')">{% csrf_token %}<button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);">No instructors registered yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Panel -->
+        <div id="panel-courses" class="admin-panel" style="display:none;">
+            <div class="card" style="padding:28px;margin-bottom:24px;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);"><i class="fas fa-plus" style="color:var(--sage);"></i> Add New Course</h3>
+                <form method="post" action="{% url 'admin_add_course' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Course Title</label><input type="text" class="form-control" name="title" required></div>
+                        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Description</label><textarea class="form-control" name="description" style="min-height:80px;"></textarea></div>
+                        <div class="form-group"><label class="form-label">Instructor</label><select class="form-control" name="instructor"><option value="">-- Select Instructor --</option>{% for ins in instructors %}<option value="{{ ins.user.id }}">{{ ins.fullname }}</option>{% endfor %}</select></div>
+                        <div class="form-group"><label class="form-label">Category</label><select class="form-control" name="category"><option value="">-- Select --</option>{% for cat in categories %}<option value="{{ cat.id }}">{{ cat.name }}</option>{% endfor %}</select></div>
+                        <div class="form-group"><label class="form-label">Duration</label><input type="text" class="form-control" name="duration" placeholder="6 Hours"></div>
+                        <div class="form-group"><label class="form-label">Difficulty</label><select class="form-control" name="difficulty"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
+                        <div class="form-group" style="grid-column:1/-1;"><label class="form-label">Course Thumbnail</label><input type="file" class="form-control" name="image" accept="image/*"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Create Course</button>
+                </form>
+            </div>
+            <div class="card" style="padding:28px;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);">All Courses</h3>
+                <div style="display:grid;gap:12px;">
+                    {% for course in courses %}
+                    <div style="display:flex;align-items:center;gap:16px;border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;">
+                        <img src="{{ course.image_url }}" alt="{{ course.title }}" style="width:72px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+                        <div style="flex:1;">
+                            <div style="font-weight:700;font-size:0.92rem;color:var(--text);">{{ course.title }}</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted);">{{ course.difficulty }} · {{ course.students_enrolled.count }} students · {{ course.lessons.count }} lessons</div>
+                        </div>
+                        <div style="display:flex;gap:8px;">
+                            <a href="{% url 'course_detail' course.id %}" class="btn btn-outline btn-sm"><i class="fas fa-eye"></i></a>
+                            <form method="post" action="{% url 'admin_delete_course' course.id %}" onsubmit="return confirm('Delete this course?')">{% csrf_token %}<button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button></form>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p style="color:var(--text-muted);text-align:center;padding:30px 0;">No courses yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcements Panel -->
+        <div id="panel-announce" class="admin-panel" style="display:none;">
+            <div class="card" style="padding:28px;">
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;color:var(--forest);"><i class="fas fa-bullhorn" style="color:var(--sage);"></i> Post Announcement</h3>
+                <form method="post" action="{% url 'admin_add_announcement' %}">
+                    {% csrf_token %}
+                    <div class="form-group"><label class="form-label">Title</label><input type="text" class="form-control" name="title" required></div>
+                    <div class="form-group"><label class="form-label">Content</label><textarea class="form-control" name="content" rows="4" required></textarea></div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-bullhorn"></i> Post Announcement</button>
+                </form>
+            </div>
+        </div>
+
+        <div style="margin-top:24px;text-align:right;">
+            <a href="{% url 'logout' %}" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
     </div>
-</div>
+</section>
+
+<script>
+function showTab(name) {
+    document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
+    document.getElementById('panel-' + name).style.display = 'block';
+    document.querySelectorAll('[id^="tab-"]').forEach(b => {
+        b.classList.remove('btn-primary');
+        b.classList.add('btn-outline');
+    });
+    document.getElementById('tab-' + name).classList.add('btn-primary');
+    document.getElementById('tab-' + name).classList.remove('btn-outline');
+}
+</script>
 {% endblock %}
