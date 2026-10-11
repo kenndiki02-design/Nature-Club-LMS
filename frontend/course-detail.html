@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Detail - Graphic Design Pro | Nature Club</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --primary-dark: #1b4332;
+            --primary: #2d6a4f;
+            --primary-light: #40916c;
+            --secondary: #52b788;
+            --secondary-light: #74c69d;
+            --bg-color: #f8f9f4;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border-color: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Page Loader */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--secondary-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 15px 30px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            height: 72px;
+        }
+        .navbar-brand img {
+            height: 40px;
+        }
+        .navbar-nav {
+            display: flex;
+            gap: 20px;
+        }
+        .navbar-nav a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .navbar-nav a:hover {
+            color: var(--primary);
+        }
+
+        /* Course Detail Wrap */
+        .course-detail-wrap {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            margin-top: 72px;
+            height: calc(100vh - 72px);
+            background-color: var(--bg-color);
+        }
+
+        /* Sidebar */
+        .lesson-sidebar {
+            background: var(--white);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .lesson-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .lesson-sidebar-header h3 {
+            font-family: 'Playfair Display', serif;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+        }
+        .progress-container {
+            margin-top: 10px;
+        }
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        .progress-bar-bg {
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--secondary);
+            width: 33%;
+            transition: width 0.3s ease;
+        }
+
+        .lesson-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .lesson-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: background 0.2s;
+        }
+        .lesson-item:hover {
+            background: var(--bg-color);
+        }
+        .lesson-item.active {
+            background: rgba(82, 183, 136, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+        .lesson-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .lesson-num.done {
+            background: var(--success);
+            border-color: var(--success);
+            color: var(--white);
+        }
+        .lesson-num.done::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+        }
+        .lesson-num.done span {
+            display: none;
+        }
+        .lesson-title-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        .lesson-duration {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 5px;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            margin-top: auto;
+        }
+        .back-link {
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .video-container {
+            width: 100%;
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .lesson-header-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .lesson-header-main h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-dark);
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        .badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: none;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .btn-success {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-success:hover {
+            background: var(--primary-dark);
+        }
+        .btn-success:disabled {
+            background: var(--border-color);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .lesson-notes {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            line-height: 1.6;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        .tab-nav {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            background: #fafafa;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 15px 25px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tab 1: Downloads */
+        .resource-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 15px;
+        }
+        .resource-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+        .resource-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .resource-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        .btn-download {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-download:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Tab 2: Assignments */
+        .assignment-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .assignment-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .submission-form {
+            margin-top: 20px;
+            display: grid;
+            gap: 15px;
+        }
+        .submission-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+        
+        /* Tab 3: Live Classes */
+        .live-class-card {
+            background: rgba(82, 183, 136, 0.05);
+            border: 1px solid var(--secondary-light);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Tab 4: Discussion */
+        .discussion-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .chat-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .message {
+            display: flex;
+            gap: 10px;
+            max-width: 80%;
+        }
+        .message.mine {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .avatar {
+            width: 35px;
+            height: 35px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .message.mine .avatar {
+            background: var(--primary);
+        }
+        .msg-bubble {
+            background: #f1f5f9;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border-top-left-radius: 0;
+            font-size: 0.9rem;
+        }
+        .message.mine .msg-bubble {
+            background: var(--primary-light);
+            color: white;
+            border-radius: 12px;
+            border-top-right-radius: 0;
+        }
+        .msg-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+            text-align: left;
+        }
+        .message.mine .msg-meta {
+            text-align: right;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            outline: none;
+        }
+        .btn-send {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Tab 5: Reviews */
+        .review-form {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .star-rating {
+            color: #d1d5db;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .star-rating .star:hover,
+        .star-rating .star.selected {
+            color: var(--warning);
+        }
+        .review-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+        .review-list {
+            display: grid;
+            gap: 20px;
+        }
+        .review-card {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .stars-display {
+            color: var(--warning);
+            font-size: 0.9rem;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1100;
+        }
+        .toast {
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .course-detail-wrap {
+                grid-template-columns: 1fr;
+            }
+            .lesson-sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Page Loader -->
+    <div class="page-loader" id="page-loader">
+        <div class="loader-spinner"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <a href="index.html">
+                <img src="../static/images/pics/logo.png" alt="Nature Club Logo">
+            </a>
+        </div>
+        <div class="navbar-nav">
+            <a href="index.html">Home</a>
+            <a href="courses.html">Courses</a>
+            <a href="dashboard.html">Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- Wrap -->
+    <div class="course-detail-wrap">
+        
+        <!-- Sidebar -->
+        <aside class="lesson-sidebar">
+            <div class="lesson-sidebar-header">
+                <h3>Graphic Design Pro</h3>
+                <div class="progress-container">
+                    <div class="progress-text">
+                        <span>Course Progress</span>
+                        <span id="progress-percent">33%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progress-fill" style="width: 33%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="lesson-list" id="lesson-list">
+                <li class="lesson-item" data-title="Introduction to Graphic Design">
+                    <div class="lesson-num done"><span>1</span></div>
+                    <div>
+                        <div class="lesson-title-text">Introduction to Graphic Design</div>
+                        <span class="lesson-duration">15:20</span>
+                    </div>
+                </li>
+                <li class="lesson-item" data-title="Color Theory & Psychology">
+                    <div class="lesson-num done"><span>2</span></div>
+                    <div>
+                        <div class="lesson-title-text">Color Theory & Psychology</div>
+                        <span class="lesson-duration">22:45</span>
+                    </div>
+                </li>
+                <li class="lesson-item active" data-title="Typography Fundamentals">
+                    <div class="lesson-num"><span>3</span></div>
+                    <div>
+                        <div class="lesson-title-text">Typography Fundamentals</div>
+                        <span class="lesson-duration">18:10</span>
+                    </div>
+                </li>
+                <li class="lesson-item" data-title="Layout & Composition Principles">
+                    <div class="lesson-num"><span>4</span></div>
+                    <div>
+                        <div class="lesson-title-text">Layout & Composition Principles</div>
+                        <span class="lesson-duration">25:30</span>
+                    </div>
+                </li>
+                <li class="lesson-item" data-title="Logo Design Workshop">
+                    <div class="lesson-num"><span>5</span></div>
+                    <div>
+                        <div class="lesson-title-text">Logo Design Workshop</div>
+                        <span class="lesson-duration">40:15</span>
+                    </div>
+                </li>
+                <li class="lesson-item" data-title="Portfolio Building">
+                    <div class="lesson-num"><span>6</span></div>
+                    <div>
+                        <div class="lesson-title-text">Portfolio Building</div>
+                        <span class="lesson-duration">30:00</span>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="courses.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Courses</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Course Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <div class="lesson-header-main">
+                <div>
+                    <h1 id="main-lesson-title">Typography Fundamentals <span class="badge" id="completion-badge">Completed</span></h1>
+                </div>
+                <button class="btn-success" id="btn-complete-lesson">
+                    <i class="fa-solid fa-check"></i> Mark as Complete
+                </button>
+            </div>
+
+            <div class="lesson-notes">
+                <h4>Lesson Notes</h4>
+                <p>Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. The arrangement of type involves selecting typefaces, point sizes, line lengths, line-spacing (leading), and letter-spacing (tracking), and adjusting the space between pairs of letters (kerning). In this lesson, we will explore how typography influences user perception and how to combine fonts effectively for digital and print mediums.</p>
+            </div>
+
+            <!-- Tabs Section -->
+            <div class="tabs-container">
+                <div class="tab-nav">
+                    <button class="tab-btn active" data-target="tab-downloads">Downloads</button>
+                    <button class="tab-btn" data-target="tab-assignments">Assignments</button>
+                    <button class="tab-btn" data-target="tab-live">Live Classes</button>
+                    <button class="tab-btn" data-target="tab-discussion">Discussion</button>
+                    <button class="tab-btn" data-target="tab-reviews">Reviews</button>
+                </div>
+
+                <!-- Tab 1: Downloads -->
+                <div class="tab-content active" id="tab-downloads">
+                    <ul class="resource-list">
+                        <li class="resource-item">
+                            <div class="resource-info">
+                                <i class="fa-regular fa-file-pdf resource-icon"></i>
+                                <div>
+                                    <strong>Typography Guide</strong>
+                                    <div class="text-muted" style="font-size: 0.8rem;">PDF Document • 2.4 MB</div>
+                                </div>
+                            </div>
+                            <button class="btn-download"><i class="fa-solid fa-download"></i> Download</button>
+                        </li>
+                        <li class="resource-item">
+                            <div class="resource-info">
+                                <i class="fa-regular fa-file-powerpoint resource-icon" style="color: #d97706;"></i>
+                                <div>
+                                    <strong>Color Wheel Presentation</strong>
+                                    <div class="text-muted" style="font-size: 0.8rem;">PPTX File • 5.1 MB</div>
+                                </div>
+                            </div>
+                            <button class="btn-download"><i class="fa-solid fa-download"></i> Download</button>
+                        </li>
+                        <li class="resource-item">
+                            <div class="resource-info">
+                                <i class="fa-regular fa-file-zipper resource-icon" style="color: #6366f1;"></i>
+                                <div>
+                                    <strong>Design Assets Pack</strong>
+                                    <div class="text-muted" style="font-size: 0.8rem;">ZIP Archive • 145 MB</div>
+                                </div>
+                            </div>
+                            <button class="btn-download"><i class="fa-solid fa-download"></i> Download</button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tab 2: Assignments -->
+                <div class="tab-content" id="tab-assignments">
+                    <div class="assignment-card">
+                        <div class="assignment-header">
+                            <h4>Design a Logo</h4>
+                            <div class="assignment-meta">
+                                <span><i class="fa-regular fa-clock"></i> Due in 7 days</span> | 
+                                <span><i class="fa-solid fa-star" style="color: var(--warning);"></i> 100 Marks</span>
+                            </div>
+                        </div>
+                        <p>Create a responsive logo design for a fictional tech startup called "NovaStream". Ensure you provide a monochromatic version and a full-color version.</p>
+                        
+                        <form class="submission-form" id="assignment-form">
+                            <textarea placeholder="Add any comments or links to your work..." required></textarea>
+                            <input type="file" required>
+                            <button type="submit" class="btn-success" style="justify-self: start;">Submit Assignment</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Live Classes -->
+                <div class="tab-content" id="tab-live">
+                    <div class="live-class-card">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0;">Q&A Session with Star Wanjiru</h4>
+                            <div class="text-muted" style="font-size: 0.85rem;"><i class="fa-regular fa-calendar"></i> Friday, 10:00 AM EAT</div>
+                        </div>
+                        <a href="#" class="btn-success" style="text-decoration: none;">Join via Google Meet</a>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Discussion -->
+                <div class="tab-content" id="tab-discussion">
+                    <div class="discussion-area">
+                        <div class="chat-box" id="chat-box">
+                            <div class="message">
+                                <div class="avatar">S</div>
+                                <div>
+                                    <div class="msg-bubble">Does anyone know good resources for free fonts?</div>
+                                    <div class="msg-meta">Sam • 2 hrs ago</div>
+                                </div>
+                            </div>
+                            <div class="message">
+                                <div class="avatar" style="background:#8b5cf6;">M</div>
+                                <div>
+                                    <div class="msg-bubble">Google Fonts and FontSquirrel are my go-to!</div>
+                                    <div class="msg-meta">Maria • 1 hr ago</div>
+                                </div>
+                            </div>
+                            <div class="message mine">
+                                <div class="avatar">U</div>
+                                <div>
+                                    <div class="msg-bubble">Thanks! This typography lesson is really eye-opening.</div>
+                                    <div class="msg-meta">You • Just now</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Type a message...">
+                            <button class="btn-send" id="btn-send-msg"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 5: Reviews -->
+                <div class="tab-content" id="tab-reviews">
+                    <div class="review-form">
+                        <h4>Leave a Review</h4>
+                        <div class="star-rating" id="review-stars">
+                            <i class="fa-solid fa-star star" data-val="1"></i>
+                            <i class="fa-solid fa-star star" data-val="2"></i>
+                            <i class="fa-solid fa-star star" data-val="3"></i>
+                            <i class="fa-solid fa-star star" data-val="4"></i>
+                            <i class="fa-solid fa-star star" data-val="5"></i>
+                        </div>
+                        <form id="review-submit-form">
+                            <textarea placeholder="Write your review here..." required></textarea>
+                            <button type="submit" class="btn-success">Submit Review</button>
+                        </form>
+                    </div>
+
+                    <div class="review-list">
+                        <div class="review-card">
+                            <div class="review-header">
+                                <strong>Jane Doe</strong>
+                                <div class="stars-display">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                                </div>
+                            </div>
+                            <p style="margin: 0; font-size: 0.9rem;">Excellent course! The explanations are very clear and practical.</p>
+                        </div>
+                        <div class="review-card">
+                            <div class="review-header">
+                                <strong>John Smith</strong>
+                                <div class="stars-display">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
+                                </div>
+                            </div>
+                            <p style="margin: 0; font-size: 0.9rem;">Great foundation. I feel much more confident in my designs now.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Page Loader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('page-loader');
+            loader.classList.add('hidden');
+            setTimeout(() => { loader.style.display = 'none'; }, 500);
+        });
+
+        // Toast functionality
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${message}`;
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Remove after 3s
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Sidebar Lesson Click
+        const lessonItems = document.querySelectorAll('.lesson-item');
+        const mainTitle = document.getElementById('main-lesson-title');
+        
+        lessonItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Remove active class from all
+                lessonItems.forEach(i => i.classList.remove('active'));
+                // Add to clicked
+                item.classList.add('active');
+                // Update title (preserve badge if we wanted to, but we'll just set text and recreate badge)
+                const titleText = item.getAttribute('data-title');
+                const isDone = item.querySelector('.lesson-num').classList.contains('done');
+                
+                mainTitle.innerHTML = `${titleText} <span class="badge" id="completion-badge" style="display: ${isDone ? 'inline-block' : 'none'}">Completed</span>`;
+                
+                // Reset complete button if not done
+                const completeBtn = document.getElementById('btn-complete-lesson');
+                if(isDone) {
+                    completeBtn.disabled = true;
+                    completeBtn.innerHTML = '<i class="fa-solid fa-check-double"></i> Completed';
+                } else {
+                    completeBtn.disabled = false;
+                    completeBtn.innerHTML = '<i class="fa-solid fa-check"></i> Mark as Complete';
+                }
+            });
+        });
+
+        // Complete Lesson Button
+        document.getElementById('btn-complete-lesson').addEventListener('click', function() {
+            const activeLesson = document.querySelector('.lesson-item.active');
+            if(activeLesson) {
+                const numIcon = activeLesson.querySelector('.lesson-num');
+                if(!numIcon.classList.contains('done')) {
+                    numIcon.classList.add('done');
+                    showToast('Lesson completed!');
+                    
+                    this.disabled = true;
+                    this.innerHTML = '<i class="fa-solid fa-check-double"></i> Completed';
+                    
+                    document.getElementById('completion-badge').style.display = 'inline-block';
+                    
+                    // Update progress (recalculate)
+                    const total = document.querySelectorAll('.lesson-item').length;
+                    const doneCount = document.querySelectorAll('.lesson-num.done').length;
+                    const pct = Math.round((doneCount / total) * 100);
+                    
+                    document.getElementById('progress-percent').innerText = `${pct}%`;
+                    document.getElementById('progress-fill').style.width = `${pct}%`;
+                }
+            }
+        });
+
+        // Tabs functionality
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(btn.getAttribute('data-target')).classList.add('active');
+            });
+        });
+
+        // Assignment Submission
+        document.getElementById('assignment-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showToast('Assignment submitted successfully!');
+            e.target.reset();
+        });
+
+        // Chat functionality
+        const chatInput = document.getElementById('chat-input');
+        const btnSendMsg = document.getElementById('btn-send-msg');
+        const chatBox = document.getElementById('chat-box');
+
+        function sendMessage() {
+            const msg = chatInput.value.trim();
+            if(msg) {
+                const msgHTML = `
+                <div class="message mine">
+                    <div class="avatar">U</div>
+                    <div>
+                        <div class="msg-bubble">${msg}</div>
+                        <div class="msg-meta">You • Just now</div>
+                    </div>
+                </div>`;
+                chatBox.insertAdjacentHTML('beforeend', msgHTML);
+                chatInput.value = '';
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        btnSendMsg.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') sendMessage();
+        });
+
+        // Review Stars functionality
+        const stars = document.querySelectorAll('#review-stars .star');
+        let rating = 0;
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                rating = star.getAttribute('data-val');
+                stars.forEach(s => {
+                    if(s.getAttribute('data-val') <= rating) {
+                        s.classList.replace('fa-regular', 'fa-solid');
+                        s.style.color = 'var(--warning)';
+                    } else {
+                        s.style.color = '#d1d5db';
+                    }
+                });
+            });
+        });
+
+        document.getElementById('review-submit-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if(rating === 0) {
+                alert('Please select a star rating.');
+                return;
+            }
+            showToast('Review submitted successfully!');
+            e.target.reset();
+            rating = 0;
+            stars.forEach(s => s.style.color = '#d1d5db');
+        });
+
+    </script>
+</body>
+</html>

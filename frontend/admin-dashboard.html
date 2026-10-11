@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Nature Club E-Learning</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Embedded CSS for specific dashboard layout */
+        :root {
+            --primary: #2d6a4f;
+            --primary-light: #52b788;
+            --primary-dark: #1b4332;
+            --accent: #40916c;
+            --accent-light: #74c69d;
+            --bg-color: #f8f9f4;
+            --text-main: #2b2b2b;
+            --text-light: #666;
+            --white: #ffffff;
+            --border: rgba(45, 106, 79, 0.1);
+            --danger: #e63946;
+            --warning: #f4a261;
+            --success: #2a9d8f;
+            --info: #457b9d;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Page Loader */
+        .page-loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 5px solid rgba(45, 106, 79, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Navbar */
+        .navbar {
+            height: 70px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+        .nav-brand img { height: 40px; }
+        .nav-brand span {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+        }
+        .nav-user .avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Dashboard Wrapper */
+        .dashboard-wrap {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 1.5rem 0;
+        }
+        .sidebar-user {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .sidebar-user .avatar {
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .sidebar-user-info h4 { margin: 0; font-size: 1rem; color: var(--primary-dark); }
+        .sidebar-user-info p { margin: 0; font-size: 0.85rem; color: var(--text-light); }
+
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-link {
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        .nav-link:hover {
+            background: rgba(45, 106, 79, 0.05);
+            color: var(--primary);
+        }
+        .nav-link.active {
+            background: rgba(45, 106, 79, 0.1);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 500;
+        }
+        .nav-link i { width: 20px; text-align: center; font-size: 1.1rem; }
+        
+        .nav-badge {
+            margin-left: auto;
+            background: var(--warning);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .account-sep {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+        .nav-link.danger { color: var(--danger); }
+        .nav-link.danger:hover { background: rgba(230, 57, 70, 0.1); }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background: var(--bg-color);
+        }
+        .panel { display: none; animation: fadeIn 0.4s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .dash-header h2 { margin: 0; font-family: 'Playfair Display', serif; color: var(--primary-dark); }
+
+        /* Grid & Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-icon {
+            width: 60px; height: 60px;
+            border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+        }
+        .stat-icon.green { background: rgba(42, 157, 143, 0.1); color: var(--success); }
+        .stat-icon.sage { background: rgba(82, 183, 136, 0.1); color: var(--primary-light); }
+        .stat-icon.orange { background: rgba(244, 162, 97, 0.1); color: var(--warning); }
+        .stat-icon.blue { background: rgba(69, 123, 157, 0.1); color: var(--info); }
+        .stat-icon.purple { background: rgba(155, 89, 182, 0.1); color: #9b59b6; }
+        .stat-icon.red { background: rgba(230, 57, 70, 0.1); color: var(--danger); }
+        
+        .stat-info h3 { margin: 0; font-size: 2rem; color: var(--text-main); }
+        .stat-info p { margin: 0; color: var(--text-light); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Charts & Feeds */
+        .row-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+            margin-bottom: 1.5rem;
+        }
+        .card-header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;}
+        .card-header h3 { margin: 0; color: var(--primary-dark); font-size: 1.1rem; }
+        
+        /* Bar Chart */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 2rem;
+            height: 250px;
+            padding-top: 2rem;
+        }
+        .bar-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        .bar {
+            width: 100%;
+            background: linear-gradient(to top, var(--primary), var(--primary-light));
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            animation: growUp 1s ease-out forwards;
+            transform-origin: bottom;
+        }
+        @keyframes growUp { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+        .bar-val { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-weight: 600; font-size: 0.9rem; color: var(--text-main); }
+        .bar-label { font-size: 0.8rem; color: var(--text-light); text-align: center; font-weight: 500; height: 30px;}
+
+        /* Feed */
+        .activity-feed { list-style: none; padding: 0; margin: 0; }
+        .feed-item {
+            display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .feed-item:last-child { border: none; }
+        .feed-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(45, 106, 79, 0.1); color: var(--primary); font-size: 0.9rem; flex-shrink: 0;}
+        .feed-content p { margin: 0 0 0.2rem 0; font-size: 0.95rem; }
+        .feed-content span { font-size: 0.8rem; color: var(--text-light); }
+
+        /* Tables */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { padding: 1rem; border-bottom: 2px solid var(--border); color: var(--text-light); font-weight: 600; font-size: 0.9rem; }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:hover td { background: rgba(45, 106, 79, 0.02); }
+        
+        .user-td { display: flex; align-items: center; gap: 1rem; }
+        .user-td img, .user-td .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .user-td .avatar { background: var(--primary-light); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        
+        .badge { padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+        .badge.role-student { background: rgba(69, 123, 157, 0.1); color: var(--info); }
+        .badge.role-inst { background: rgba(155, 89, 182, 0.1); color: #9b59b6; }
+        .badge.role-admin { background: rgba(45, 106, 79, 0.1); color: var(--primary); }
+        .badge.status-active { background: rgba(42, 157, 143, 0.1); color: var(--success); }
+        .badge.status-susp { background: rgba(244, 162, 97, 0.1); color: var(--warning); }
+        .badge.status-pending { background: rgba(244, 162, 97, 0.1); color: var(--warning); }
+
+        .btn-sm { padding: 0.4rem 0.8rem; border-radius: 6px; border: none; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: 0.3s; margin-right: 0.2rem;}
+        .btn-green { background: var(--success); color: white; }
+        .btn-green:hover { background: #21867a; }
+        .btn-yellow { background: var(--warning); color: white; }
+        .btn-yellow:hover { background: #e09355; }
+        .btn-red { background: var(--danger); color: white; }
+        .btn-red:hover { background: #d0303d; }
+        .btn-primary { background: var(--primary); color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;}
+
+        /* Controls */
+        .controls-bar { display: flex; justify-content: space-between; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;}
+        .search-box { position: relative; width: 300px; }
+        .search-box input { width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; box-sizing: border-box; outline: none;}
+        .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+        .filters select { padding: 0.6rem 1rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; outline: none; background: white; margin-left: 0.5rem;}
+
+        /* Approvals */
+        .approval-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+        .approval-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 1rem;}
+        .app-header { display: flex; align-items: center; gap: 1rem; }
+        .app-header .avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;}
+        .app-meta { font-size: 0.9rem; color: var(--text-light); display: flex; flex-direction: column; gap: 0.3rem;}
+        .app-actions { display: flex; gap: 1rem; margin-top: auto; }
+        .app-actions button { flex: 1; padding: 0.6rem; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; color: white; transition: 0.3s;}
+        .app-actions .approve-btn { background: var(--success); }
+        .app-actions .approve-btn:hover { background: #21867a; }
+        .app-actions .reject-btn { background: var(--danger); }
+        .app-actions .reject-btn:hover { background: #d0303d; }
+        
+        .empty-state { text-align: center; padding: 3rem; color: var(--text-light); display: none; }
+        .empty-state i { font-size: 3rem; color: var(--border); margin-bottom: 1rem; }
+
+        /* Forms */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.8rem; border: 1px solid rgba(0,0,0,0.1); border-radius: 8px; box-sizing: border-box; font-family: inherit;}
+        .form-group textarea { resize: vertical; min-height: 100px; }
+
+        /* Toast */
+        .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: white; border-left: 4px solid var(--primary); padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 1rem; animation: slideInRight 0.3s forwards; opacity: 0;}
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
+        .toast.warning { border-color: var(--warning); }
+        .toast i { font-size: 1.2rem; }
+        .toast.success i { color: var(--success); }
+        .toast.error i { color: var(--danger); }
+        .toast.warning i { color: var(--warning); }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0;} to { transform: translateX(0); opacity: 1;} }
+        @keyframes slideOutRight { from { transform: translateX(0); opacity: 1;} to { transform: translateX(100%); opacity: 0;} }
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.5rem; }
+        .page-btn { width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); background: white; cursor: pointer; transition: 0.3s;}
+        .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .page-btn:hover:not(.active) { background: rgba(45, 106, 79, 0.05); }
+
+        /* Reports CSS Charts */
+        .report-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .css-chart-box { height: 200px; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.01); border-radius: 8px; margin-top: 1rem;}
+        .circular-chart { width: 120px; height: 120px; }
+        .circle-bg { fill: none; stroke: rgba(0,0,0,0.05); stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        .percentage { font-size: 0.5em; text-anchor: middle; font-weight: bold; fill: var(--text-main); transform: translateY(0.15em);}
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);}
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 2rem; border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;}
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;}
+        .modal-header h3 { margin: 0; }
+        .close-modal { cursor: pointer; font-size: 1.5rem; color: var(--text-light); }
+
+    </style>
+</head>
+<body>
+
+    <!-- Page Loader -->
+    <div class="page-loader" id="page-loader">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="#" class="nav-brand">
+            <img src="../static/images/pics/logo.png" alt="Nature Club" onerror="this.src='https://via.placeholder.com/40x40/2d6a4f/ffffff?text=NC'">
+            <span>Nature Club Admin</span>
+        </a>
+        <div class="nav-user">
+            <span>Administrator</span>
+            <div class="avatar">AD</div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Wrap -->
+    <div class="dashboard-wrap">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-user">
+                <div class="avatar">AD</div>
+                <div class="sidebar-user-info">
+                    <h4>Administrator</h4>
+                    <p>⚙️ Admin</p>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a class="nav-link active" data-panel="overview"><i class="fas fa-tachometer-alt"></i> Overview</a></li>
+                <li><a class="nav-link" data-panel="users"><i class="fas fa-users"></i> Users</a></li>
+                <li><a class="nav-link" data-panel="approvals"><i class="fas fa-user-check"></i> Approvals <span class="nav-badge" id="pending-badge">3 pending</span></a></li>
+                <li><a class="nav-link" data-panel="courses"><i class="fas fa-book"></i> Courses</a></li>
+                <li><a class="nav-link" data-panel="certificates"><i class="fas fa-certificate"></i> Certificates</a></li>
+                <li><a class="nav-link" data-panel="announcements"><i class="fas fa-bullhorn"></i> Announcements</a></li>
+                <li><a class="nav-link" data-panel="reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li class="account-sep"><a href="#" class="nav-link danger" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Panel: Overview -->
+            <div class="panel active" id="panel-overview">
+                <div class="dash-header">
+                    <h2>Dashboard Overview</h2>
+                    <p class="text-light">Welcome back, Admin!</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="fas fa-graduation-cap"></i></div>
+                        <div class="stat-info">
+                            <h3 class="counter" data-target="482">0</h3>
+                            <p>Total Students</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon sage"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <div class="stat-info">
+                            <h3 class="counter" data-target="8">0</h3>
+                            <p>Total Instructors</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info">
+                            <h3 class="counter" data-target="3" id="overview-pending-count">0</h3>
+                            <p>Pending Approval</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="fas fa-book"></i></div>
+                        <div class="stat-info">
+                            <h3 class="counter" data-target="12">0</h3>
+                            <p>Active Courses</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fas fa-certificate"></i></div>
+                        <div class="stat-info">
+                            <h3 class="counter" data-target="247">0</h3>
+                            <p>Certificates Issued</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon red"><i class="fas fa-tasks"></i></div>
+                        <div class="stat-info">
+                            <h3 class="counter" data-target="89">0</h3>
+                            <p>Total Submissions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Course Enrollment</h3>
+                        </div>
+                        <div class="bar-chart">
+                            <div class="bar-col">
+                                <div class="bar" style="height: 100%;">
+                                    <div class="bar-val">20</div>
+                                </div>
+                                <div class="bar-label">Graphic Design</div>
+                            </div>
+                            <div class="bar-col">
+                                <div class="bar" style="height: 75%;">
+                                    <div class="bar-val">15</div>
+                                </div>
+                                <div class="bar-label">Web Dev</div>
+                            </div>
+                            <div class="bar-col">
+                                <div class="bar" style="height: 60%;">
+                                    <div class="bar-val">12</div>
+                                </div>
+                                <div class="bar-label">Marketing</div>
+                            </div>
+                            <div class="bar-col">
+                                <div class="bar" style="height: 60%;">
+                                    <div class="bar-val">12</div>
+                                </div>
+                                <div class="bar-label">Photography</div>
+                            </div>
+                            <div class="bar-col">
+                                <div class="bar" style="height: 40%;">
+                                    <div class="bar-val">8</div>
+                                </div>
+                                <div class="bar-label">Videography</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Recent Activity</h3>
+                        </div>
+                        <ul class="activity-feed">
+                            <li class="feed-item">
+                                <div class="feed-icon"><i class="fas fa-user-plus"></i></div>
+                                <div class="feed-content">
+                                    <p><strong>John Doe</strong> registered as a student.</p>
+                                    <span>2 mins ago</span>
+                                </div>
+                            </li>
+                            <li class="feed-item">
+                                <div class="feed-icon"><i class="fas fa-book-open"></i></div>
+                                <div class="feed-content">
+                                    <p><strong>Advanced Photography</strong> published.</p>
+                                    <span>1 hour ago</span>
+                                </div>
+                            </li>
+                            <li class="feed-item">
+                                <div class="feed-icon"><i class="fas fa-certificate"></i></div>
+                                <div class="feed-content">
+                                    <p>Certificate issued to <strong>Alice Smith</strong>.</p>
+                                    <span>3 hours ago</span>
+                                </div>
+                            </li>
+                            <li class="feed-item">
+                                <div class="feed-icon"><i class="fas fa-user-check"></i></div>
+                                <div class="feed-content">
+                                    <p><strong>Jane Wambui</strong> applied for Instructor.</p>
+                                    <span>5 hours ago</span>
+                                </div>
+                            </li>
+                            <li class="feed-item">
+                                <div class="feed-icon"><i class="fas fa-comment"></i></div>
+                                <div class="feed-content">
+                                    <p>New comment on <strong>Web Dev</strong>.</p>
+                                    <span>Yesterday</span>
+                                </div>
+                            </li>
+                            <li class="feed-item">
+                                <div class="feed-icon"><i class="fas fa-video"></i></div>
+                                <div class="feed-content">
+                                    <p>Live session ended for <strong>Marketing</strong>.</p>
+                                    <span>Yesterday</span>
+                                </div>
+                            </li>
+                            <li class="feed-item">
+                                <div class="feed-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="feed-content">
+                                    <p>Server backup completed successfully.</p>
+                                    <span>2 days ago</span>
+                                </div>
+                            </li>
+                            <li class="feed-item">
+                                <div class="feed-icon"><i class="fas fa-users"></i></div>
+                                <div class="feed-content">
+                                    <p><strong>10 new users</strong> joined this week.</p>
+                                    <span>3 days ago</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Users -->
+            <div class="panel" id="panel-users">
+                <div class="dash-header">
+                    <h2>User Management</h2>
+                    <button class="btn-primary" onclick="showToast('Exporting user list...', 'info')"><i class="fas fa-download"></i> Export Users</button>
+                </div>
+                <div class="card">
+                    <div class="controls-bar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search users by name or email...">
+                        </div>
+                        <div class="filters">
+                            <select>
+                                <option value="">All Roles</option>
+                                <option value="student">Students</option>
+                                <option value="instructor">Instructors</option>
+                                <option value="admin">Admins</option>
+                            </select>
+                            <select>
+                                <option value="">All Statuses</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-table-body">
+                                <tr><td>1</td><td class="user-td"><div class="avatar">JD</div> <span>John Doe</span></td><td>john@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-active">Active</span></td><td>2026-09-20</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>2</td><td class="user-td"><div class="avatar" style="background:#f4a261;">SM</div> <span>Sarah Mwaura</span></td><td>sarah@example.com</td><td><span class="badge role-inst">Instructor</span></td><td><span class="badge status-active">Active</span></td><td>2026-08-15</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>3</td><td class="user-td"><div class="avatar" style="background:#e63946;">AK</div> <span>Alex Kamau</span></td><td>alex@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-susp">Suspended</span></td><td>2026-09-10</td><td><button class="btn-sm btn-green" onclick="actionUser('unsuspend', this)">Unsuspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>4</td><td class="user-td"><div class="avatar" style="background:#2a9d8f;">BW</div> <span>Betty Wanjiku</span></td><td>betty@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-active">Active</span></td><td>2026-07-22</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>5</td><td class="user-td"><div class="avatar" style="background:#9b59b6;">MK</div> <span>Mark Kiprotich</span></td><td>mark@example.com</td><td><span class="badge role-inst">Instructor</span></td><td><span class="badge status-active">Active</span></td><td>2026-06-11</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>6</td><td class="user-td"><div class="avatar">CO</div> <span>Caleb Ochieng</span></td><td>caleb@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-active">Active</span></td><td>2026-09-25</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>7</td><td class="user-td"><div class="avatar" style="background:#457b9d;">LN</div> <span>Lucy Nduta</span></td><td>lucy@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-active">Active</span></td><td>2026-05-18</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>8</td><td class="user-td"><div class="avatar" style="background:#e63946;">PO</div> <span>Paul Odhiambo</span></td><td>paul@example.com</td><td><span class="badge role-inst">Instructor</span></td><td><span class="badge status-active">Active</span></td><td>2026-04-30</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>9</td><td class="user-td"><div class="avatar" style="background:#f4a261;">EM</div> <span>Emma Mutua</span></td><td>emma@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-active">Active</span></td><td>2026-09-28</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>10</td><td class="user-td"><div class="avatar">DK</div> <span>David Kimani</span></td><td>david@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-active">Active</span></td><td>2026-09-27</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>11</td><td class="user-td"><div class="avatar" style="background:#9b59b6;">GK</div> <span>Grace Kendi</span></td><td>grace@example.com</td><td><span class="badge role-inst">Instructor</span></td><td><span class="badge status-active">Active</span></td><td>2026-03-12</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>12</td><td class="user-td"><div class="avatar" style="background:#2a9d8f;">SO</div> <span>Sam Okoth</span></td><td>sam@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-susp">Suspended</span></td><td>2026-08-01</td><td><button class="btn-sm btn-green" onclick="actionUser('unsuspend', this)">Unsuspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>13</td><td class="user-td"><div class="avatar" style="background:#e63946;">IM</div> <span>Ian Mwangi</span></td><td>ian@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-active">Active</span></td><td>2026-07-05</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>14</td><td class="user-td"><div class="avatar">FN</div> <span>Faith Njoroge</span></td><td>faith@example.com</td><td><span class="badge role-inst">Instructor</span></td><td><span class="badge status-active">Active</span></td><td>2026-02-19</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                                <tr><td>15</td><td class="user-td"><div class="avatar" style="background:#457b9d;">BM</div> <span>Brian Mutiso</span></td><td>brian@example.com</td><td><span class="badge role-student">Student</span></td><td><span class="badge status-active">Active</span></td><td>2026-09-02</td><td><button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button><button class="btn-sm btn-red" onclick="actionUser('delete', this)">Delete</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Approvals -->
+            <div class="panel" id="panel-approvals">
+                <div class="dash-header">
+                    <h2>Pending Instructor Approvals</h2>
+                </div>
+                
+                <div class="approval-cards" id="approval-list">
+                    <div class="approval-card">
+                        <div class="app-header">
+                            <div class="avatar">JW</div>
+                            <div>
+                                <h3 style="margin:0; font-size: 1.1rem; color: var(--text-main);">Jane Wambui</h3>
+                                <p style="margin:0; font-size: 0.85rem; color: var(--text-light);">jane@example.com</p>
+                            </div>
+                        </div>
+                        <div class="app-meta">
+                            <span><i class="fas fa-tag"></i> Specialty: Graphic Design</span>
+                            <span><i class="fas fa-clock"></i> Applied 2 days ago</span>
+                        </div>
+                        <div class="app-actions">
+                            <button class="approve-btn" onclick="handleApproval(this, 'Jane Wambui', 'approve')"><i class="fas fa-check"></i> Approve</button>
+                            <button class="reject-btn" onclick="handleApproval(this, 'Jane Wambui', 'reject')"><i class="fas fa-times"></i> Reject</button>
+                        </div>
+                    </div>
+
+                    <div class="approval-card">
+                        <div class="app-header">
+                            <div class="avatar" style="background:#f4a261;">PM</div>
+                            <div>
+                                <h3 style="margin:0; font-size: 1.1rem; color: var(--text-main);">Peter Mwenda</h3>
+                                <p style="margin:0; font-size: 0.85rem; color: var(--text-light);">peter@example.com</p>
+                            </div>
+                        </div>
+                        <div class="app-meta">
+                            <span><i class="fas fa-tag"></i> Specialty: Web Development</span>
+                            <span><i class="fas fa-clock"></i> Applied 4 days ago</span>
+                        </div>
+                        <div class="app-actions">
+                            <button class="approve-btn" onclick="handleApproval(this, 'Peter Mwenda', 'approve')"><i class="fas fa-check"></i> Approve</button>
+                            <button class="reject-btn" onclick="handleApproval(this, 'Peter Mwenda', 'reject')"><i class="fas fa-times"></i> Reject</button>
+                        </div>
+                    </div>
+
+                    <div class="approval-card">
+                        <div class="app-header">
+                            <div class="avatar" style="background:#e63946;">MN</div>
+                            <div>
+                                <h3 style="margin:0; font-size: 1.1rem; color: var(--text-main);">Mary Nyambura</h3>
+                                <p style="margin:0; font-size: 0.85rem; color: var(--text-light);">mary@example.com</p>
+                            </div>
+                        </div>
+                        <div class="app-meta">
+                            <span><i class="fas fa-tag"></i> Specialty: Photography</span>
+                            <span><i class="fas fa-clock"></i> Applied 1 week ago</span>
+                        </div>
+                        <div class="app-actions">
+                            <button class="approve-btn" onclick="handleApproval(this, 'Mary Nyambura', 'approve')"><i class="fas fa-check"></i> Approve</button>
+                            <button class="reject-btn" onclick="handleApproval(this, 'Mary Nyambura', 'reject')"><i class="fas fa-times"></i> Reject</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="empty-state" id="approval-empty">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>All caught up!</h3>
+                    <p>There are no pending instructor approvals at the moment.</p>
+                </div>
+            </div>
+
+            <!-- Panel: Courses -->
+            <div class="panel" id="panel-courses">
+                <div class="dash-header">
+                    <h2>Course Management</h2>
+                    <button class="btn-primary" onclick="document.getElementById('create-course-modal').classList.add('active')"><i class="fas fa-plus"></i> Create Course</button>
+                </div>
+                <div class="card">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Instructor</th>
+                                    <th>Students</th>
+                                    <th>Lessons</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Graphic Design Masterclass</strong></td>
+                                    <td>Sarah Mwaura</td>
+                                    <td>120</td>
+                                    <td>24</td>
+                                    <td><span class="badge status-active">Published</span></td>
+                                    <td><button class="btn-sm btn-yellow" onclick="document.getElementById('create-course-modal').classList.add('active')">Edit</button> <button class="btn-sm" style="background:#6c757d; color:white;">Archive</button> <button class="btn-sm btn-red" onclick="showToast('Course deleted', 'error')">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fullstack Web Dev</strong></td>
+                                    <td>Mark Kiprotich</td>
+                                    <td>95</td>
+                                    <td>32</td>
+                                    <td><span class="badge status-active">Published</span></td>
+                                    <td><button class="btn-sm btn-yellow" onclick="document.getElementById('create-course-modal').classList.add('active')">Edit</button> <button class="btn-sm" style="background:#6c757d; color:white;">Archive</button> <button class="btn-sm btn-red" onclick="showToast('Course deleted', 'error')">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Digital Marketing 101</strong></td>
+                                    <td>Paul Odhiambo</td>
+                                    <td>85</td>
+                                    <td>15</td>
+                                    <td><span class="badge status-active">Published</span></td>
+                                    <td><button class="btn-sm btn-yellow" onclick="document.getElementById('create-course-modal').classList.add('active')">Edit</button> <button class="btn-sm" style="background:#6c757d; color:white;">Archive</button> <button class="btn-sm btn-red" onclick="showToast('Course deleted', 'error')">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Photography for Beginners</strong></td>
+                                    <td>Grace Kendi</td>
+                                    <td>110</td>
+                                    <td>18</td>
+                                    <td><span class="badge status-active">Published</span></td>
+                                    <td><button class="btn-sm btn-yellow" onclick="document.getElementById('create-course-modal').classList.add('active')">Edit</button> <button class="btn-sm" style="background:#6c757d; color:white;">Archive</button> <button class="btn-sm btn-red" onclick="showToast('Course deleted', 'error')">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Advanced Videography</strong></td>
+                                    <td>Faith Njoroge</td>
+                                    <td>42</td>
+                                    <td>20</td>
+                                    <td><span class="badge status-susp">Draft</span></td>
+                                    <td><button class="btn-sm btn-yellow" onclick="document.getElementById('create-course-modal').classList.add('active')">Edit</button> <button class="btn-sm" style="background:#6c757d; color:white;">Archive</button> <button class="btn-sm btn-red" onclick="showToast('Course deleted', 'error')">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SEO Strategies</strong></td>
+                                    <td>Paul Odhiambo</td>
+                                    <td>30</td>
+                                    <td>10</td>
+                                    <td><span class="badge status-susp">Draft</span></td>
+                                    <td><button class="btn-sm btn-yellow" onclick="document.getElementById('create-course-modal').classList.add('active')">Edit</button> <button class="btn-sm" style="background:#6c757d; color:white;">Archive</button> <button class="btn-sm btn-red" onclick="showToast('Course deleted', 'error')">Delete</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>UI/UX Principles</strong></td>
+                                    <td>Sarah Mwaura</td>
+                                    <td>0</td>
+                                    <td>12</td>
+                                    <td><span class="badge status-susp">Draft</span></td>
+                                    <td><button class="btn-sm btn-yellow" onclick="document.getElementById('create-course-modal').classList.add('active')">Edit</button> <button class="btn-sm" style="background:#6c757d; color:white;">Archive</button> <button class="btn-sm btn-red" onclick="showToast('Course deleted', 'error')">Delete</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Certificates -->
+            <div class="panel" id="panel-certificates">
+                <div class="dash-header">
+                    <h2>Certificate Management</h2>
+                    <button class="btn-primary" onclick="document.getElementById('issue-cert-modal').classList.add('active')"><i class="fas fa-award"></i> Issue Certificate</button>
+                </div>
+                <div class="card">
+                    <div class="controls-bar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search by certificate # or student name...">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Student</th>
+                                    <th>Course</th>
+                                    <th>Cert Number</th>
+                                    <th>Issued Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1</td><td>John Doe</td><td>Graphic Design Masterclass</td><td>NC-CERT-0101</td><td>2026-09-25</td><td><button class="btn-sm btn-green" onclick="showToast('Viewing cert...', 'success')">View</button> <button class="btn-sm btn-primary" onclick="showToast('Downloading PDF...', 'info')">Download</button> <button class="btn-sm btn-red" onclick="showToast('Certificate revoked', 'error')">Revoke</button></td></tr>
+                                <tr><td>2</td><td>Betty Wanjiku</td><td>Photography for Beginners</td><td>NC-CERT-0102</td><td>2026-09-24</td><td><button class="btn-sm btn-green">View</button> <button class="btn-sm btn-primary">Download</button> <button class="btn-sm btn-red">Revoke</button></td></tr>
+                                <tr><td>3</td><td>Caleb Ochieng</td><td>Fullstack Web Dev</td><td>NC-CERT-0103</td><td>2026-09-20</td><td><button class="btn-sm btn-green">View</button> <button class="btn-sm btn-primary">Download</button> <button class="btn-sm btn-red">Revoke</button></td></tr>
+                                <tr><td>4</td><td>Lucy Nduta</td><td>Digital Marketing 101</td><td>NC-CERT-0104</td><td>2026-09-18</td><td><button class="btn-sm btn-green">View</button> <button class="btn-sm btn-primary">Download</button> <button class="btn-sm btn-red">Revoke</button></td></tr>
+                                <tr><td>5</td><td>Emma Mutua</td><td>Graphic Design Masterclass</td><td>NC-CERT-0105</td><td>2026-09-15</td><td><button class="btn-sm btn-green">View</button> <button class="btn-sm btn-primary">Download</button> <button class="btn-sm btn-red">Revoke</button></td></tr>
+                                <tr><td>6</td><td>David Kimani</td><td>Fullstack Web Dev</td><td>NC-CERT-0106</td><td>2026-09-10</td><td><button class="btn-sm btn-green">View</button> <button class="btn-sm btn-primary">Download</button> <button class="btn-sm btn-red">Revoke</button></td></tr>
+                                <tr><td>7</td><td>Sam Okoth</td><td>Photography for Beginners</td><td>NC-CERT-0107</td><td>2026-09-05</td><td><button class="btn-sm btn-green">View</button> <button class="btn-sm btn-primary">Download</button> <button class="btn-sm btn-red">Revoke</button></td></tr>
+                                <tr><td>8</td><td>Brian Mutiso</td><td>Digital Marketing 101</td><td>NC-CERT-0108</td><td>2026-09-01</td><td><button class="btn-sm btn-green">View</button> <button class="btn-sm btn-primary">Download</button> <button class="btn-sm btn-red">Revoke</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Announcements -->
+            <div class="panel" id="panel-announcements">
+                <div class="dash-header">
+                    <h2>Announcements</h2>
+                </div>
+                <div class="row-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="card">
+                        <div class="card-header"><h3>Post New Announcement</h3></div>
+                        <form id="announcement-form" onsubmit="event.preventDefault(); showToast('Announcement posted successfully!', 'success'); this.reset();">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" required placeholder="e.g. System Maintenance Notice">
+                            </div>
+                            <div class="form-group">
+                                <label>Audience</label>
+                                <select required>
+                                    <option value="all">All Users</option>
+                                    <option value="students">Students Only</option>
+                                    <option value="instructors">Instructors Only</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Content</label>
+                                <textarea required placeholder="Write your announcement here..."></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width:100%;">Post Announcement</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h3>Recent Announcements</h3></div>
+                        <div class="activity-feed">
+                            <div class="feed-item" style="flex-direction:column; align-items:flex-start;">
+                                <div><strong>Welcome to the new semester!</strong> <span class="badge role-admin" style="font-size:0.7rem;">All Users</span></div>
+                                <p style="font-size:0.9rem; color:var(--text-light); margin:0.5rem 0;">We are excited to kick off the new courses for this term...</p>
+                                <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+                                    <button class="btn-sm btn-yellow">Edit</button><button class="btn-sm btn-red" onclick="showToast('Announcement deleted', 'error')">Delete</button>
+                                </div>
+                            </div>
+                            <div class="feed-item" style="flex-direction:column; align-items:flex-start;">
+                                <div><strong>Instructor Guidelines Update</strong> <span class="badge role-inst" style="font-size:0.7rem;">Instructors</span></div>
+                                <p style="font-size:0.9rem; color:var(--text-light); margin:0.5rem 0;">Please review the updated guidelines for course submissions...</p>
+                                <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+                                    <button class="btn-sm btn-yellow">Edit</button><button class="btn-sm btn-red" onclick="showToast('Announcement deleted', 'error')">Delete</button>
+                                </div>
+                            </div>
+                            <div class="feed-item" style="flex-direction:column; align-items:flex-start;">
+                                <div><strong>Platform Maintenance</strong> <span class="badge role-admin" style="font-size:0.7rem;">All Users</span></div>
+                                <p style="font-size:0.9rem; color:var(--text-light); margin:0.5rem 0;">Scheduled downtime on Saturday at 2 AM EAT for 1 hour.</p>
+                                <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
+                                    <button class="btn-sm btn-yellow">Edit</button><button class="btn-sm btn-red" onclick="showToast('Announcement deleted', 'error')">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Reports -->
+            <div class="panel" id="panel-reports">
+                <div class="dash-header">
+                    <h2>Reports & Analytics</h2>
+                    <div>
+                        <button class="btn-primary" style="background:#457b9d; margin-right: 0.5rem;" onclick="showToast('Downloading CSV...', 'success')"><i class="fas fa-file-csv"></i> Export CSV</button>
+                        <button class="btn-primary" style="background:#e63946;" onclick="showToast('Downloading PDF...', 'success')"><i class="fas fa-file-pdf"></i> Export PDF</button>
+                    </div>
+                </div>
+                <div class="report-charts">
+                    <div class="card">
+                        <div class="card-header"><h3>Enrollment Over Time</h3></div>
+                        <div class="css-chart-box" style="flex-direction:column; align-items:flex-end; padding: 1rem; position:relative; background:white;">
+                            <!-- CSS approximation of a line chart -->
+                            <div style="width:100%; height:100%; border-left:2px solid var(--border); border-bottom:2px solid var(--border); position:relative;">
+                                <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                    <polyline fill="none" stroke="var(--primary)" stroke-width="2" points="0,90 20,70 40,75 60,40 80,50 100,10" />
+                                    <polygon fill="rgba(45,106,79,0.1)" points="0,100 0,90 20,70 40,75 60,40 80,50 100,10 100,100" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header"><h3>Course Completion Rate</h3></div>
+                        <div class="css-chart-box">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle" stroke="var(--accent)" stroke-dasharray="75, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <text x="18" y="20.35" class="percentage">75%</text>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h3>Top Courses by Enrollment</h3></div>
+                        <div class="css-chart-box" style="display:block; padding-top: 1rem;">
+                            <div style="margin-bottom: 0.8rem;">
+                                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.2rem;"><span>Graphic Design</span><span>120</span></div>
+                                <div style="width:100%; background:var(--border); height:8px; border-radius:4px;"><div style="width:90%; background:var(--primary); height:100%; border-radius:4px;"></div></div>
+                            </div>
+                            <div style="margin-bottom: 0.8rem;">
+                                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.2rem;"><span>Photography</span><span>110</span></div>
+                                <div style="width:100%; background:var(--border); height:8px; border-radius:4px;"><div style="width:85%; background:var(--accent); height:100%; border-radius:4px;"></div></div>
+                            </div>
+                            <div style="margin-bottom: 0.8rem;">
+                                <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:0.2rem;"><span>Web Dev</span><span>95</span></div>
+                                <div style="width:100%; background:var(--border); height:8px; border-radius:4px;"><div style="width:70%; background:var(--info); height:100%; border-radius:4px;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><h3>Certificates per Month</h3></div>
+                        <div class="css-chart-box" style="align-items:flex-end; gap:10px; padding: 1rem; border-left:1px solid var(--border); border-bottom:1px solid var(--border);">
+                            <div style="width:20px; height:30%; background:#9b59b6; border-radius:4px 4px 0 0;"></div>
+                            <div style="width:20px; height:50%; background:#9b59b6; border-radius:4px 4px 0 0;"></div>
+                            <div style="width:20px; height:45%; background:#9b59b6; border-radius:4px 4px 0 0;"></div>
+                            <div style="width:20px; height:70%; background:#9b59b6; border-radius:4px 4px 0 0;"></div>
+                            <div style="width:20px; height:90%; background:#9b59b6; border-radius:4px 4px 0 0;"></div>
+                            <div style="width:20px; height:100%; background:#9b59b6; border-radius:4px 4px 0 0;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Create Course Modal -->
+    <div class="modal" id="create-course-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create/Edit Course</h3>
+                <span class="close-modal" onclick="this.closest('.modal').classList.remove('active')">&times;</span>
+            </div>
+            <form onsubmit="event.preventDefault(); showToast('Course saved successfully!', 'success'); this.closest('.modal').classList.remove('active');">
+                <div class="form-group">
+                    <label>Course Title</label>
+                    <input type="text" required placeholder="Enter course title">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select required>
+                        <option value="">Select Category</option>
+                        <option value="design">Design</option>
+                        <option value="dev">Development</option>
+                        <option value="photo">Photography</option>
+                        <option value="marketing">Marketing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea required placeholder="Course description..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%;">Save Course</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Issue Certificate Modal -->
+    <div class="modal" id="issue-cert-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Manual Certificate Issuance</h3>
+                <span class="close-modal" onclick="this.closest('.modal').classList.remove('active')">&times;</span>
+            </div>
+            <form onsubmit="event.preventDefault(); showToast('Certificate issued successfully!', 'success'); this.closest('.modal').classList.remove('active');">
+                <div class="form-group">
+                    <label>Student</label>
+                    <select required>
+                        <option value="">Select Student</option>
+                        <option value="1">John Doe</option>
+                        <option value="2">Betty Wanjiku</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Course</label>
+                    <select required>
+                        <option value="">Select Course</option>
+                        <option value="1">Graphic Design Masterclass</option>
+                        <option value="2">Fullstack Web Dev</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Issue Date</label>
+                    <input type="date" required id="cert-date">
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%;">Issue Certificate</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Set today's date in cert issue modal
+        document.getElementById('cert-date').valueAsDate = new Date();
+
+        // Page Loader
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('page-loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('page-loader').style.visibility = 'hidden';
+                    animateCounters();
+                }, 500);
+            }, 800);
+        });
+
+        // Panel Switching
+        const navLinks = document.querySelectorAll('.nav-link[data-panel]');
+        const panels = document.querySelectorAll('.panel');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPanel = link.getAttribute('data-panel');
+                
+                navLinks.forEach(nl => nl.classList.remove('active'));
+                link.classList.add('active');
+
+                panels.forEach(p => p.classList.remove('active'));
+                document.getElementById('panel-' + targetPanel).classList.add('active');
+                
+                if (targetPanel === 'overview') {
+                    animateCounters();
+                }
+            });
+        });
+
+        // Counter Animation
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                counter.innerText = '0';
+                const updateCounter = () => {
+                    const target = +counter.getAttribute('data-target');
+                    const c = +counter.innerText;
+                    const increment = target / 30;
+                    if (c < target) {
+                        counter.innerText = `${Math.ceil(c + increment)}`;
+                        setTimeout(updateCounter, 30);
+                    } else {
+                        counter.innerText = target;
+                    }
+                };
+                updateCounter();
+            });
+        }
+
+        // Toast System
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = 'fa-check-circle';
+            if(type === 'error') icon = 'fa-exclamation-circle';
+            if(type === 'warning' || type === 'info') icon = 'fa-info-circle';
+
+            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s forwards';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Approvals Logic
+        let pendingCount = 3;
+        function handleApproval(btn, name, action) {
+            const card = btn.closest('.approval-card');
+            card.style.display = 'none';
+            pendingCount--;
+            
+            const badge = document.getElementById('pending-badge');
+            const counter = document.getElementById('overview-pending-count');
+            
+            if (pendingCount > 0) {
+                badge.innerText = `${pendingCount} pending`;
+                if(counter) counter.innerText = pendingCount;
+                if(counter) counter.setAttribute('data-target', pendingCount);
+            } else {
+                badge.style.display = 'none';
+                if(counter) counter.innerText = 0;
+                if(counter) counter.setAttribute('data-target', 0);
+                document.getElementById('approval-list').style.display = 'none';
+                document.getElementById('approval-empty').style.display = 'block';
+            }
+
+            if(action === 'approve') {
+                showToast(`${name} has been approved as an Instructor.`, 'success');
+            } else {
+                showToast(`${name}'s application was rejected.`, 'error');
+            }
+        }
+
+        // User Action Logic
+        function actionUser(action, btn) {
+            const row = btn.closest('tr');
+            const name = row.querySelector('.user-td span').innerText;
+            
+            if (action === 'delete') {
+                if(window.confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
+                    row.remove();
+                    showToast(`${name} has been deleted.`, 'error');
+                }
+            } else if (action === 'suspend') {
+                if(window.confirm(`Suspend ${name}?`)) {
+                    btn.outerHTML = `<button class="btn-sm btn-green" onclick="actionUser('unsuspend', this)">Unsuspend</button>`;
+                    const statusBadge = row.querySelector('.status-active');
+                    if(statusBadge) {
+                        statusBadge.className = 'badge status-susp';
+                        statusBadge.innerText = 'Suspended';
+                    }
+                    showToast(`${name} has been suspended.`, 'warning');
+                }
+            } else if (action === 'unsuspend') {
+                btn.outerHTML = `<button class="btn-sm btn-yellow" onclick="actionUser('suspend', this)">Suspend</button>`;
+                const statusBadge = row.querySelector('.status-susp');
+                if(statusBadge) {
+                    statusBadge.className = 'badge status-active';
+                    statusBadge.innerText = 'Active';
+                }
+                showToast(`${name} account restored.`, 'success');
+            }
+        }
+        
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if(confirm('Are you sure you want to log out?')) {
+                showToast('Logging out...', 'info');
+                setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+            }
+        });
+
+    </script>
+</body>
+</html>
