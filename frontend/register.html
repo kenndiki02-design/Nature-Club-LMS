@@ -144,7 +144,7 @@
     <nav class="navbar">
         <div class="container">
             <a href="index.html" class="navbar-brand">
-                <img src="../static/images/pics/logo.png" alt="Nature Club Logo">
+                <img src="static/images/pics/logo.png" alt="Nature Club Logo">
                 <span>Nature Club LMS</span>
             </a>
             <div class="navbar-nav">
@@ -176,11 +176,12 @@
         <div class="container">
             <div class="auth-card">
                 <div class="auth-header">
-                    <img src="../static/images/pics/logo.png" alt="Logo">
+                    <img src="static/images/pics/logo.png" alt="Logo">
                     <h2>Join the Nature Club LMS</h2>
                 </div>
 
                 <form id="registerForm">
+                    <p class="form-error" data-auth-message role="alert" aria-live="polite" hidden></p>
                     
                     <label class="form-label">I am signing up as:</label>
                     <div class="role-selector">
@@ -197,29 +198,29 @@
                     </div>
 
                     <div id="instructor-notice" class="alert-warning">
-                        <i class="fas fa-info-circle"></i> Instructor accounts require administrator approval.
+                        <i class="fas fa-info-circle"></i> Instructor accounts are available immediately in this demo and are stored in this browser.
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="fullname">Full Name</label>
-                        <input type="text" id="fullname" class="form-control" placeholder="John Doe" required>
+                        <input type="text" id="fullname" name="fullname" class="form-control" placeholder="John Doe" autocomplete="name" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label" for="email">Email Address</label>
-                            <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="john@example.com" autocomplete="email" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="phone">Phone Number</label>
-                            <input type="tel" id="phone" class="form-control" placeholder="+254 7XX XXX XXX">
+                            <input type="tel" id="phone" name="phone" class="form-control" placeholder="+254 7XX XXX XXX" autocomplete="tel">
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label" for="password">Password</label>
                         <div class="input-icon-wrapper">
-                            <input type="password" id="password" class="form-control" placeholder="Create a strong password" required>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password" minlength="8" autocomplete="new-password" required>
                             <button type="button" class="password-toggle" data-pw-toggle="password">
                                 <i class="fas fa-eye"></i>
                             </button>
@@ -279,6 +280,8 @@
 
     <!-- Main JS -->
     <script src="js/main.js"></script>
+    <script src="js/demo-credentials.js"></script>
+    <script src="js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
@@ -303,36 +306,6 @@
 
             studentRadio.addEventListener('change', updateRoleSelection);
             instructorRadio.addEventListener('change', updateRoleSelection);
-
-
-            // Password toggle
-            const toggleBtn = document.querySelector('[data-pw-toggle]');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    const input = document.getElementById(this.getAttribute('data-pw-toggle'));
-                    const icon = this.querySelector('i');
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        icon.classList.replace('fa-eye', 'fa-eye-slash');
-                    } else {
-                        input.type = 'password';
-                        icon.classList.replace('fa-eye-slash', 'fa-eye');
-                    }
-                });
-            }
-
-            // Form Submit
-            const registerForm = document.getElementById('registerForm');
-            if(registerForm) {
-                registerForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    if(window.LMS && window.LMS.Toast) {
-                        LMS.Toast.show('Registration functionality coming soon!', 'success');
-                    } else {
-                        alert('Registration functionality coming soon!');
-                    }
-                });
-            }
 
             // Simple loader removal fallback
             const loader = document.getElementById('loader');

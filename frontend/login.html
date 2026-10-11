@@ -101,7 +101,7 @@
     <nav class="navbar">
         <div class="container">
             <a href="index.html" class="navbar-brand">
-                <img src="../static/images/pics/logo.png" alt="Nature Club Logo">
+                <img src="static/images/pics/logo.png" alt="Nature Club Logo">
                 <span>Nature Club LMS</span>
             </a>
             <div class="navbar-nav">
@@ -133,17 +133,18 @@
         <div class="container">
             <div class="auth-card">
                 <div class="auth-header">
-                    <img src="../static/images/pics/logo.png" alt="Logo">
+                    <img src="static/images/pics/logo.png" alt="Logo">
                     <h2>Welcome Back</h2>
                     <p>Sign in to continue your learning journey.</p>
                 </div>
 
                 <form id="loginForm">
+                    <p class="form-error" data-auth-message role="alert" aria-live="polite" hidden></p>
                     <div class="form-group">
                         <label class="form-label" for="email">Email Address</label>
                         <div class="input-icon-wrapper">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" class="form-control" placeholder="john.doe@example.com" required>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="john.doe@example.com" autocomplete="email" required>
                         </div>
                     </div>
                     
@@ -151,7 +152,7 @@
                         <label class="form-label" for="password">Password</label>
                         <div class="input-icon-wrapper">
                             <i class="fas fa-lock"></i>
-                            <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
                             <button type="button" class="password-toggle" data-pw-toggle="password">
                                 <i class="fas fa-eye"></i>
                             </button>
@@ -212,37 +213,10 @@
 
     <!-- Main JS -->
     <script src="js/main.js"></script>
+    <script src="js/demo-credentials.js"></script>
+    <script src="js/auth.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Password toggle
-            const toggleBtn = document.querySelector('[data-pw-toggle]');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    const input = document.getElementById(this.getAttribute('data-pw-toggle'));
-                    const icon = this.querySelector('i');
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        icon.classList.replace('fa-eye', 'fa-eye-slash');
-                    } else {
-                        input.type = 'password';
-                        icon.classList.replace('fa-eye-slash', 'fa-eye');
-                    }
-                });
-            }
-
-            // Form Submit
-            const loginForm = document.getElementById('loginForm');
-            if(loginForm) {
-                loginForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    if(window.LMS && window.LMS.Toast) {
-                        LMS.Toast.show('Login functionality coming soon!', 'success');
-                    } else {
-                        alert('Login functionality coming soon!');
-                    }
-                });
-            }
-
             // Simple loader removal fallback
             const loader = document.getElementById('loader');
             if (loader) {

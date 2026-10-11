@@ -43,7 +43,7 @@ frontend/
 
 ## 🖼️ Assets
 
-All images are loaded from: `../static/images/pics/`
+All images are loaded from: `static/images/pics/`
 
 | File | Usage |
 |------|-------|
@@ -102,6 +102,12 @@ All forms currently show demo toasts. To connect to your backend:
 1. Replace form `action=""` with your API endpoint URLs
 2. Replace `fetch()`/`XMLHttpRequest` calls where toast demos exist
 3. Populate data (courses, users, etc.) dynamically via template engine or JS fetch
+
+## Deploying on Vercel
+
+This is a static HTML/CSS/JavaScript frontend and does not require a build step. Import the repository into Vercel with the repository root as the project root; `vercel.json` publishes the `frontend/` directory. The site entry point is `index.html`.
+
+The forms and login screens are frontend demos. Deploying this site does not provide backend authentication, persistent data, or form submission services.
 
 ---
 
