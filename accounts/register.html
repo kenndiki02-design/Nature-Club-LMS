@@ -1,0 +1,86 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Carousel Start -->
+<div class="container-fluid p-0 mb-5">
+    <div class="owl-carousel header-carousel position-relative">
+        <div class="owl-carousel-item position-relative">
+            <img class="img-fluid" src="{% static 'images/pics/carousel 1.jpg' %}" alt="">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
+                style="background: rgba(24, 29, 56, .7);">
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-sm-10 col-lg-8">
+                            <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Karu Nature Club LMS
+                            </h5>
+                            <h1 class="display-3 text-white animated slideInDown">Editorial Department</h1>
+                            <p class="fs-5 text-white mb-4 pb-2">Welcome to Nature Club Editorial Learning
+                                Management System where you are taught all the skills required by one in the
+                                editorial department.</p>
+                            <a href="{% url 'about' %}"
+                                class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
+                            <a href="{% url 'register' %}"
+                                class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join
+                                Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="owl-carousel-item position-relative">
+            <img class="img-fluid" src="{% static 'images/pics/carousel 2.jpg' %}" alt="">
+            <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
+                style="background: rgba(24, 29, 56, .7);">
+                <div class="container">
+                    <div class="row justify-content-start">
+                        <div class="col-sm-10 col-lg-8">
+                            <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Karu Nature Club LMS
+                            </h5>
+                            <h1 class="display-3 text-white animated slideInDown">Editorial Department</h1>
+                            <p class="fs-5 text-white mb-4 pb-2">Welcome to Nature Club Editorial Learning
+                                Management System where you are taught all the skills required by one in the
+                                editorial department.</p>
+                            <a href="{% url 'about' %}"
+                                class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
+                            <a href="{% url 'register' %}"
+                                class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join
+                                Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Carousel End -->
+
+<!-- Register Start -->
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="register-form" style="max-width: 400px; width: 100%;">
+        <h2 class="mb-4 text-center">Student Registration</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="fullname" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="fullname" name="fullname" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="number" class="form-control" id="phone" name="number" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+        </form>
+        <p class="mt-3 text-center">{{ message }}</p>
+    </div>
+</div>
+<!-- Register End -->
+{% endblock %}

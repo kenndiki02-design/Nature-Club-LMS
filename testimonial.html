@@ -1,0 +1,83 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Header Start -->
+<div class="container-fluid bg-primary py-5 mb-5 page-header">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 text-center">
+                <h1 class="display-3 text-white animated slideInDown">Testimonial</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb justify-content-center">
+                        <li class="breadcrumb-item"><a class="text-white" href="{% url 'home' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a class="text-white" href="{% url 'about' %}">Pages</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Testimonial</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Header End -->
+
+
+<!-- Testimonial Start -->
+<div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container">
+        <div class="text-center">
+            <h6 class="section-title bg-white text-center text-primary px-3">Testimonial</h6>
+            <h1 class="mb-5">Our Students Say!</h1>
+        </div>
+        <div class="owl-carousel testimonial-carousel position-relative">
+            <div class="testimonial-item text-center">
+                <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'images/pics/madam pj.jpg' %}"
+                    style="width: 80px; height: 80px;">
+                <h5 class="mb-0">Madam PJ</h5>
+                <p>Online Tutor</p>
+                <div class="testimonial-text bg-light text-center p-4">
+                    <p class="mb-0">The graphic design and video editing courses helped me create better teaching
+                        materials and grow my online presence. The platform made learning simple, and the
+                        assignments pushed me to improve. I now attract more students because of the skills I
+                        gained.</p>
+                </div>
+            </div>
+            <div class="testimonial-item text-center">
+                <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'images/pics/bwana sg.jpg' %}"
+                    style="width: 80px; height: 80px;">
+                <h5 class="mb-0">Bwana SG</h5>
+                <p>Politician</p>
+                <div class="testimonial-text bg-light text-center p-4">
+                    <p class="mb-0">The online marketing and video editing classes were eye-opening. They taught me
+                        how to communicate more effectively with the public and present my ideas clearly. The skills
+                        I gained have helped me build a stronger connection with my audience.</p>
+                </div>
+            </div>
+            <div class="testimonial-item text-center">
+                <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'images/pics/comp m.jpg' %}"
+                    style="width: 80px; height: 80px;">
+                <h5 class="mb-0">Computer Morris</h5>
+                <p>Computer Analyst</p>
+                <div class="testimonial-text bg-light text-center p-4">
+                    <p class="mb-0">Taking the web design and online marketing classes completely changed how I
+                        approach digital projects. The lessons were practical, easy to follow, and helped me sharpen
+                        my problem-solving skills. I use what I learned every day in my work as a computer analyst.
+                    </p>
+                </div>
+            </div>
+            <div class="testimonial-item text-center">
+                <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'images/pics/fmm.jpg' %}"
+                    style="width: 80px; height: 80px;">
+                <h5 class="mb-0">F.M.M</h5>
+                <p>Project Manager</p>
+                <div class="testimonial-text bg-light text-center p-4">
+                    <p class="mb-0">These courses gave me a stronger understanding of how to manage creative teams.
+                        Learning web and graphic design helped me communicate better with designers and developers.
+                        It’s one of the best investments I’ve made in my professional growth.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Testimonial End -->
+{% endblock %}

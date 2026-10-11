@@ -1,0 +1,361 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}{{ course.title }} – Karatina University Nature Club LMS{% endblock %}
+
+{% block content %}
+<section class="page-hero" style="padding:80px 0 40px;">
+    <h1>{{ course.title }}</h1>
+    <div class="breadcrumb">
+        <a href="{% url 'home' %}">Home</a><span class="breadcrumb-sep">/</span>
+        <a href="{% url 'courses' %}">Courses</a><span class="breadcrumb-sep">/</span>
+        <span>{{ course.title }}</span>
+    </div>
+</section>
+
+<section style="padding:40px 0 80px;background:var(--cream);">
+    <div class="container">
+        <div style="display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start;">
+
+            <!-- Sidebar: Lessons List -->
+            <div style="position:sticky;top:90px;">
+                <div class="card" style="padding:0;overflow:hidden;">
+                    <div style="background:var(--forest);padding:18px 20px;">
+                        <h4 style="color:white;font-family:'Playfair Display',serif;font-size:1rem;margin-bottom:4px;">Course Lessons</h4>
+                        <p style="color:rgba(255,255,255,0.6);font-size:0.78rem;">{{ lessons|length }} lessons total</p>
+                        {% if progress %}
+                        <div style="margin-top:10px;">
+                            <div class="progress-bar-wrap" style="background:rgba(255,255,255,0.2);">
+                                <div class="progress-bar-fill" style="width:{{ progress.progress_percentage }}%;"></div>
+                            </div>
+                            <div style="font-size:0.75rem;color:rgba(255,255,255,0.7);margin-top:4px;">{{ progress.progress_percentage }}% complete</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div style="max-height:480px;overflow-y:auto;">
+                        {% for lesson in lessons %}
+                        <a href="?lesson={{ lesson.id }}" style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);transition:var(--transition);{% if active_lesson.id == lesson.id %}background:rgba(27,67,50,0.08);{% endif %}" onmouseover="this.style.background='rgba(27,67,50,0.05)'" onmouseout="this.style.background='{% if active_lesson.id == lesson.id %}rgba(27,67,50,0.08){% else %}transparent{% endif %}'">
+                            <div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+                                {% if lesson.id in completed_lesson_ids %}background:var(--sage);color:white;{% elif active_lesson.id == lesson.id %}background:var(--forest);color:white;{% else %}background:var(--border);color:var(--text-muted);{% endif %}
+                                font-size:0.75rem;">
+                                {% if lesson.id in completed_lesson_ids %}<i class="fas fa-check"></i>{% else %}{{ forloop.counter }}{% endif %}
+                            </div>
+                            <div style="flex:1;min-width:0;">
+                                <div style="font-size:0.85rem;font-weight:{% if active_lesson.id == lesson.id %}700{% else %}500{% endif %};color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ lesson.title }}</div>
+                                {% if lesson.video_url %}<div style="font-size:0.72rem;color:var(--text-muted);"><i class="fas fa-play-circle" style="color:var(--sage);"></i> Video</div>{% endif %}
+                            </div>
+                        </a>
+                        {% empty %}
+                        <div style="padding:30px;text-align:center;color:var(--text-muted);font-size:0.85rem;">No lessons added yet.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions Sidebar -->
+                <div class="card" style="padding:18px;margin-top:16px;">
+                    <div style="display:flex;flex-direction:column;gap:8px;">
+                        {% if role == 'instructor' or role == 'admin' %}
+                        <!-- Instructor controls -->
+                        <button onclick="document.getElementById('addLessonModal').style.display='flex'" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-plus"></i> Add Lesson</button>
+                        <button onclick="document.getElementById('addResourceModal').style.display='flex'" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-upload"></i> Upload Resource</button>
+                        <button onclick="document.getElementById('addAssignmentModal').style.display='flex'" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-tasks"></i> Add Assignment</button>
+                        <button onclick="document.getElementById('addLiveModal').style.display='flex'" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-video"></i> Add Live Class</button>
+                        {% endif %}
+                        <a href="{% url 'courses' %}" class="btn btn-outline btn-sm" style="justify-content:center;"><i class="fas fa-arrow-left"></i> All Courses</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div style="display:flex;flex-direction:column;gap:24px;">
+
+                <!-- Active Lesson -->
+                {% if active_lesson %}
+                <div class="card" style="padding:0;overflow:hidden;">
+                    {% if active_lesson.video_url %}
+                    <div style="background:#000;position:relative;padding-top:56.25%;border-radius:var(--radius) var(--radius) 0 0;overflow:hidden;">
+                        <iframe
+                            src="{% if 'youtu.be' in active_lesson.video_url or 'youtube.com' in active_lesson.video_url %}https://www.youtube.com/embed/{{ active_lesson.video_url|slice:'-11:' }}{% else %}{{ active_lesson.video_url }}{% endif %}"
+                            title="{{ active_lesson.title }}"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;">
+                        </iframe>
+                    </div>
+                    {% else %}
+                    <div style="height:240px;background:var(--gradient-hero);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-book-open" style="font-size:4rem;color:rgba(255,255,255,0.3);"></i>
+                    </div>
+                    {% endif %}
+                    <div style="padding:24px;">
+                        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                            <h2 style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--forest);">{{ active_lesson.title }}</h2>
+                            {% if role == 'student' and active_lesson.id not in completed_lesson_ids %}
+                            <form method="post" action="{% url 'mark_lesson_complete' active_lesson.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Mark as Complete</button>
+                            </form>
+                            {% elif active_lesson.id in completed_lesson_ids %}
+                            <span class="badge badge-green"><i class="fas fa-check"></i> Completed</span>
+                            {% endif %}
+                        </div>
+                        {% if active_lesson.content %}
+                        <div style="font-size:0.9rem;color:var(--text);line-height:1.8;white-space:pre-wrap;">{{ active_lesson.content }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Tabs for Resources, Assignments, Live, Forum, Reviews -->
+                <div class="card" style="padding:0;overflow:hidden;">
+                    <div style="display:flex;border-bottom:1px solid var(--border);overflow-x:auto;">
+                        {% for tab in "resources,assignments,live,forum,reviews"|split:"," %}{% endfor %}
+                        <button class="tab-btn active" onclick="switchTab(this,'tab-resources')" style="padding:16px 20px;background:none;border:none;border-bottom:3px solid var(--forest);cursor:pointer;font-weight:600;font-size:0.88rem;color:var(--forest);white-space:nowrap;">
+                            <i class="fas fa-download" style="margin-right:6px;"></i>Downloads
+                        </button>
+                        <button class="tab-btn" onclick="switchTab(this,'tab-assignments')" style="padding:16px 20px;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-weight:600;font-size:0.88rem;color:var(--text-muted);white-space:nowrap;">
+                            <i class="fas fa-tasks" style="margin-right:6px;"></i>Assignments
+                        </button>
+                        <button class="tab-btn" onclick="switchTab(this,'tab-live')" style="padding:16px 20px;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-weight:600;font-size:0.88rem;color:var(--text-muted);white-space:nowrap;">
+                            <i class="fas fa-video" style="margin-right:6px;"></i>Live Classes
+                        </button>
+                        <button class="tab-btn" onclick="switchTab(this,'tab-forum')" style="padding:16px 20px;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-weight:600;font-size:0.88rem;color:var(--text-muted);white-space:nowrap;">
+                            <i class="fas fa-comments" style="margin-right:6px;"></i>Discussion
+                        </button>
+                        <button class="tab-btn" onclick="switchTab(this,'tab-reviews')" style="padding:16px 20px;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-weight:600;font-size:0.88rem;color:var(--text-muted);white-space:nowrap;">
+                            <i class="fas fa-star" style="margin-right:6px;"></i>Reviews
+                        </button>
+                    </div>
+
+                    <!-- Downloads -->
+                    <div id="tab-resources" class="tab-content" style="padding:24px;">
+                        {% if resources %}
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            {% for res in resources %}
+                            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--cream);border-radius:var(--radius-sm);border:1px solid var(--border);">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--forest),var(--sage));border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.9rem;"><i class="fas fa-file-alt"></i></div>
+                                    <div>
+                                        <div style="font-weight:600;font-size:0.9rem;">{{ res.title }}</div>
+                                        <div style="font-size:0.75rem;color:var(--text-muted);">Uploaded: {{ res.uploaded_at|date:"M d, Y" }}</div>
+                                    </div>
+                                </div>
+                                <a href="{{ res.file.url }}" download class="btn btn-primary btn-sm"><i class="fas fa-download"></i> Download</a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p style="color:var(--text-muted);text-align:center;padding:30px;">No downloadable resources yet.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Assignments -->
+                    <div id="tab-assignments" class="tab-content" style="display:none;padding:24px;">
+                        {% if assignments %}
+                        {% for assignment in assignments %}
+                        <div style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:20px;margin-bottom:16px;">
+                            <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+                                <div>
+                                    <h4 style="font-weight:700;font-size:0.95rem;color:var(--text);">{{ assignment.title }}</h4>
+                                    <p style="font-size:0.85rem;color:var(--text-muted);margin-top:4px;">{{ assignment.description }}</p>
+                                    <div style="font-size:0.78rem;margin-top:8px;display:flex;gap:16px;color:var(--text-muted);">
+                                        <span><i class="fas fa-clock" style="color:var(--sage);"></i> Due: {{ assignment.deadline|date:"M d, Y H:i" }}</span>
+                                        <span><i class="fas fa-star" style="color:var(--sage);"></i> {{ assignment.max_marks }} marks</span>
+                                    </div>
+                                </div>
+                                {% if role == 'student' %}
+                                {% with sub=assignment_submissions|default_if_none:None %}
+                                {% if assignment_submissions %}
+                                {% with sub=assignment_submissions|get_item:assignment.id %}
+                                {% if sub %}
+                                <span class="badge badge-green"><i class="fas fa-check"></i> Submitted{% if sub.marks_obtained %} · {{ sub.marks_obtained }}/{{ assignment.max_marks }}{% endif %}</span>
+                                {% endif %}
+                                {% endwith %}
+                                {% endif %}
+                                {% endwith %}
+                                {% endif %}
+                            </div>
+
+                            {% if role == 'student' %}
+                            <form method="post" action="{% url 'submit_assignment' assignment.id %}" enctype="multipart/form-data" style="background:var(--cream);padding:16px;border-radius:var(--radius-sm);">
+                                {% csrf_token %}
+                                <h5 style="font-size:0.88rem;font-weight:700;margin-bottom:12px;color:var(--forest);">Submit Your Work</h5>
+                                <div class="form-group"><label class="form-label">Text Submission</label><textarea class="form-control" name="text_submission" rows="3" placeholder="Type your answer here..."></textarea></div>
+                                <div class="form-group"><label class="form-label">Or Upload File</label><input type="file" class="form-control" name="file"></div>
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> Submit</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <p style="color:var(--text-muted);text-align:center;padding:30px;">No assignments yet.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Live Classes -->
+                    <div id="tab-live" class="tab-content" style="display:none;padding:24px;">
+                        {% if live_classes %}
+                        {% for live in live_classes %}
+                        <div style="display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px;">
+                            <div>
+                                <h4 style="font-weight:700;font-size:0.92rem;color:var(--text);">{{ live.title }}</h4>
+                                <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;"><i class="fas fa-calendar" style="color:var(--sage);"></i> {{ live.scheduled_time|date:"F d, Y H:i" }}</p>
+                            </div>
+                            <a href="{{ live.meeting_link }}" target="_blank" class="btn btn-success btn-sm"><i class="fas fa-video"></i> Join Class</a>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <p style="color:var(--text-muted);text-align:center;padding:30px;">No live classes scheduled yet.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Discussion Forum -->
+                    <div id="tab-forum" class="tab-content" style="display:none;padding:24px;">
+                        <div style="max-height:400px;overflow-y:auto;margin-bottom:20px;display:flex;flex-direction:column;gap:12px;">
+                            {% for msg in forum_messages %}
+                            <div style="display:flex;gap:12px;{% if msg.user == request.user %}flex-direction:row-reverse;{% endif %}">
+                                <div style="width:36px;height:36px;border-radius:50%;background:var(--gradient-hero);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;flex-shrink:0;">{{ msg.user.student.fullname|first|upper }}</div>
+                                <div style="max-width:70%;">
+                                    <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:4px;{% if msg.user == request.user %}text-align:right;{% endif %}">{{ msg.user.student.fullname }} · {{ msg.created_at|date:"M d, H:i" }}</div>
+                                    <div style="background:{% if msg.user == request.user %}var(--forest);color:white;{% else %}var(--cream);color:var(--text);{% endif %};padding:10px 14px;border-radius:12px;font-size:0.88rem;line-height:1.5;">{{ msg.message }}</div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p style="color:var(--text-muted);text-align:center;padding:20px;">No messages yet. Start the discussion!</p>
+                            {% endfor %}
+                        </div>
+                        <form method="post" action="{% url 'post_forum_message' course.id %}" style="display:flex;gap:10px;">
+                            {% csrf_token %}
+                            <input type="text" name="message" class="form-control" placeholder="Write a message..." required style="flex:1;">
+                            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+
+                    <!-- Reviews -->
+                    <div id="tab-reviews" class="tab-content" style="display:none;padding:24px;">
+                        {% if role == 'student' %}
+                        <div style="background:var(--cream);padding:20px;border-radius:var(--radius-sm);margin-bottom:20px;border:1px solid var(--border);">
+                            <h4 style="font-weight:700;font-size:0.92rem;margin-bottom:12px;color:var(--forest);">Leave a Review</h4>
+                            <form method="post" action="{% url 'add_review' course.id %}">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label class="form-label">Rating (1-5)</label>
+                                    <select class="form-control" name="rating" style="width:120px;">
+                                        {% for i in "54321" %}<option value="{{ i }}">{{ i }} ★</option>{% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group"><textarea name="review_text" class="form-control" rows="3" placeholder="Share your experience..."></textarea></div>
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-star"></i> Submit Review</button>
+                            </form>
+                        </div>
+                        {% endif %}
+                        {% for review in reviews %}
+                        <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                                <div style="display:flex;align-items:center;gap:10px;">
+                                    <div style="width:36px;height:36px;border-radius:50%;background:var(--gradient-hero);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.9rem;">{{ review.student.student.fullname|first|upper }}</div>
+                                    <div>
+                                        <div style="font-weight:700;font-size:0.88rem;">{{ review.student.student.fullname }}</div>
+                                        <div style="color:#f59e0b;font-size:0.8rem;">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+                                    </div>
+                                </div>
+                                <span style="font-size:0.75rem;color:var(--text-muted);">{{ review.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.6;">{{ review.review_text }}</p>
+                        </div>
+                        {% empty %}
+                        <p style="color:var(--text-muted);text-align:center;padding:30px;">No reviews yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modals for Instructor Actions -->
+{% if role == 'instructor' or role == 'admin' %}
+<!-- Add Lesson Modal -->
+<div id="addLessonModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;">
+    <div class="card" style="padding:32px;max-width:520px;width:90%;max-height:90vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3 style="font-family:'Playfair Display',serif;color:var(--forest);">Add New Lesson</h3>
+            <button onclick="this.closest('[id]').style.display='none'" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">×</button>
+        </div>
+        <form method="post" action="{% url 'instructor_add_lesson' course.id %}">
+            {% csrf_token %}
+            <div class="form-group"><label class="form-label">Lesson Title</label><input type="text" class="form-control" name="title" required></div>
+            <div class="form-group"><label class="form-label">Video URL (YouTube)</label><input type="url" class="form-control" name="video_url" placeholder="https://youtu.be/..."></div>
+            <div class="form-group"><label class="form-label">Lesson Notes/Content</label><textarea class="form-control" name="content" rows="5" placeholder="Write the lesson content here..."></textarea></div>
+            <div class="form-group"><label class="form-label">Order</label><input type="number" class="form-control" name="order" value="{{ lessons|length }}" min="0"></div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Add Lesson</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Resource Modal -->
+<div id="addResourceModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;">
+    <div class="card" style="padding:32px;max-width:480px;width:90%;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3 style="font-family:'Playfair Display',serif;color:var(--forest);">Upload Resource</h3>
+            <button onclick="this.closest('[id]').style.display='none'" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">×</button>
+        </div>
+        <form method="post" action="{% url 'instructor_add_resource' course.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group"><label class="form-label">Resource Title</label><input type="text" class="form-control" name="title" required></div>
+            <div class="form-group"><label class="form-label">File (PDF, PPT, ZIP, Image...)</label><input type="file" class="form-control" name="file" required></div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Upload Resource</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Assignment Modal -->
+<div id="addAssignmentModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;">
+    <div class="card" style="padding:32px;max-width:520px;width:90%;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3 style="font-family:'Playfair Display',serif;color:var(--forest);">Create Assignment</h3>
+            <button onclick="this.closest('[id]').style.display='none'" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">×</button>
+        </div>
+        <form method="post" action="{% url 'instructor_add_assignment' course.id %}">
+            {% csrf_token %}
+            <div class="form-group"><label class="form-label">Assignment Title</label><input type="text" class="form-control" name="title" required></div>
+            <div class="form-group"><label class="form-label">Description / Instructions</label><textarea class="form-control" name="description" rows="4" required></textarea></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="form-group"><label class="form-label">Deadline</label><input type="datetime-local" class="form-control" name="deadline" required></div>
+                <div class="form-group"><label class="form-label">Max Marks</label><input type="number" class="form-control" name="max_marks" value="100" required></div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Create Assignment</button>
+        </form>
+    </div>
+</div>
+
+<!-- Add Live Class Modal -->
+<div id="addLiveModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;align-items:center;justify-content:center;">
+    <div class="card" style="padding:32px;max-width:480px;width:90%;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h3 style="font-family:'Playfair Display',serif;color:var(--forest);">Add Live Class</h3>
+            <button onclick="this.closest('[id]').style.display='none'" style="background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--text-muted);">×</button>
+        </div>
+        <form method="post" action="{% url 'instructor_add_live' course.id %}">
+            {% csrf_token %}
+            <div class="form-group"><label class="form-label">Session Title</label><input type="text" class="form-control" name="title" required></div>
+            <div class="form-group"><label class="form-label">Meeting Link (Google Meet / Zoom / Teams)</label><input type="url" class="form-control" name="meeting_link" required placeholder="https://meet.google.com/..."></div>
+            <div class="form-group"><label class="form-label">Scheduled Date & Time</label><input type="datetime-local" class="form-control" name="scheduled_time" required></div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Add Live Class</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function switchTab(btn, tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => {
+        b.style.borderBottomColor = 'transparent';
+        b.style.color = 'var(--text-muted)';
+    });
+    document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+    btn.style.borderBottomColor = 'var(--forest)';
+    btn.style.color = 'var(--forest)';
+    document.getElementById(tabId).style.display = 'block';
+}
+</script>
+{% endblock %}
